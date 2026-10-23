@@ -8,12 +8,14 @@ import { TechnologyMatrix } from "@/components/home/TechnologyMatrix";
 import { ExperienceTimeline } from "@/components/home/ExperienceTimeline";
 import { ContactSection } from "@/components/contact/ContactSection";
 import { DigitalVisitingCard } from "@/components/card/DigitalVisitingCard";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function HomePage() {
   const settings = await db.getSiteSettings();
+  const siteUrl = getSiteUrl();
 
   // JSON-LD structured data for search engine credibility
   const jsonLd = {
@@ -22,7 +24,7 @@ export default async function HomePage() {
     name: settings.displayName,
     jobTitle: settings.headline,
     description: settings.bio,
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://portfolio.internal",
+    url: siteUrl,
     sameAs: [settings.githubUrl, settings.linkedinUrl, settings.twitterUrl].filter(Boolean),
   };
 

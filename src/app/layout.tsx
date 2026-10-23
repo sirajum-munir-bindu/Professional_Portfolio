@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { db } from "@/lib/db";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const viewport: Viewport = {
   themeColor: "#090a0f",
@@ -10,7 +11,7 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await db.getSiteSettings();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfolio.internal";
+  const siteUrl = getSiteUrl();
 
   return {
     metadataBase: new URL(siteUrl),

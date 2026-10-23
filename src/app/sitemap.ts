@@ -1,8 +1,9 @@
 import { MetadataRoute } from "next";
 import { db } from "@/lib/db";
+import { getSiteUrl } from "@/lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfolio.internal";
+  const siteUrl = getSiteUrl();
   const settings = await db.getSiteSettings();
 
   // If Portfolio is inactive, do not expose project case study routes in sitemap
