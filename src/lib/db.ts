@@ -87,7 +87,13 @@ class ResilientDataStore {
         if (Array.isArray(parsed.experience)) this.experience = parsed.experience;
         if (Array.isArray(parsed.education)) this.education = parsed.education;
         if (Array.isArray(parsed.achievements)) this.achievements = parsed.achievements;
-        if (parsed.settings) this.settings = parsed.settings;
+        if (parsed.settings) {
+          this.settings = {
+            ...initialSiteSettings,
+            ...parsed.settings,
+            activeDisplayMode: (parsed.settings.activeDisplayMode as any) || "PORTFOLIO",
+          };
+        }
         if (Array.isArray(parsed.messages)) this.messages = parsed.messages;
       }
     } catch {
@@ -524,13 +530,20 @@ class ResilientDataStore {
           where: { id: "default" },
         });
         if (row) {
-          return row;
+          return {
+            ...this.settings,
+            ...row,
+            activeDisplayMode: (row.activeDisplayMode as any) || "PORTFOLIO",
+          };
         }
       }
     } catch {
       // fallback
     }
-    return this.settings;
+    return {
+      ...this.settings,
+      activeDisplayMode: (this.settings.activeDisplayMode as any) || "PORTFOLIO",
+    };
   }
 
   async updateSiteSettings(updates: Partial<SiteSettingsData>): Promise<SiteSettingsData> {

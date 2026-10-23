@@ -13,6 +13,7 @@ import {
   Image as ImageIcon,
   Mail,
   Settings,
+  Smartphone,
   ExternalLink,
   LogOut,
   Shield,
@@ -44,6 +45,7 @@ export function AdminSidebar({ adminEmail, displayName, avatarUrl }: AdminSideba
     { href: "/admin/achievements", label: "Achievements", icon: Award },
     { href: "/admin/media", label: "Media Storage", icon: ImageIcon },
     { href: "/admin/messages", label: "Inquiries Inbox", icon: Mail },
+    { href: "/admin/card", label: "E-Visiting Card", icon: Smartphone },
     { href: "/admin/settings", label: "Site Settings", icon: Settings },
   ];
 

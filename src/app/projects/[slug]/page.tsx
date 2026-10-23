@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
@@ -46,9 +46,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
+  const settings = await db.getSiteSettings();
+
+  // If Portfolio mode is inactive, public project case studies must not be accessible
+  if (settings.activeDisplayMode !== "PORTFOLIO") {
+    redirect("/");
+  }
+
   const { slug } = await params;
   const project = await db.getProjectBySlug(slug, true);
-  const settings = await db.getSiteSettings();
   const allProjects = await db.getPublishedProjects();
 
   if (!project) {

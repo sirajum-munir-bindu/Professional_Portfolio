@@ -4,8 +4,23 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SiteSettingsData } from "@/types";
-import { saveSiteSettingsAction } from "@/app/actions/admin-actions";
-import { Save, AlertCircle, CheckCircle2, Upload, User, ExternalLink } from "lucide-react";
+import { saveSiteSettingsAction, saveActiveDisplayModeAction } from "@/app/actions/admin-actions";
+import {
+  Save,
+  AlertCircle,
+  CheckCircle2,
+  Upload,
+  User,
+  ExternalLink,
+  Layers,
+  Smartphone,
+  Check,
+  Sparkles,
+  ArrowRight,
+  Phone,
+  MessageSquare,
+  QrCode,
+} from "lucide-react";
 
 interface SiteSettingsClientProps {
   initialSettings: SiteSettingsData;
@@ -27,6 +42,32 @@ export function SiteSettingsClient({ initialSettings }: SiteSettingsClientProps)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isSwitchingMode, setIsSwitchingMode] = useState(false);
+
+  const handleSwitchMode = async (mode: "PORTFOLIO" | "DIGITAL_CARD") => {
+    if (settings.activeDisplayMode === mode) return;
+    setIsSwitchingMode(true);
+    setMessage(null);
+    setError(null);
+
+    try {
+      const res = await saveActiveDisplayModeAction(mode);
+      if (res.success && res.activeDisplayMode) {
+        setSettings((prev) => ({ ...prev, activeDisplayMode: res.activeDisplayMode as any }));
+        setMessage(
+          `Display Mode Updated: ${
+            mode === "PORTFOLIO" ? "Portfolio" : "Premium E-Visiting Card"
+          } is now the exclusive active experience at the root domain (/). Changes take effect immediately without redeployment.`
+        );
+      } else {
+        setError(res.error || "Failed to switch website display mode.");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to switch display mode.");
+    } finally {
+      setIsSwitchingMode(false);
+    }
+  };
 
   const isValidHex = (hex: string) => /^#[0-9a-fA-F]{6}$/.test(hex);
 
@@ -118,6 +159,244 @@ export function SiteSettingsClient({ initialSettings }: SiteSettingsClientProps)
           <span>{error}</span>
         </div>
       )}
+
+      {/* WEBSITE DISPLAY MODE (MUTUALLY EXCLUSIVE ACTIVATION) */}
+      <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-6 space-y-5 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-border pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse" />
+              <h2 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
+                Website Display Mode (Single-Domain Control)
+              </h2>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1 max-w-xl">
+              Choose which experience is published at your root domain (<code className="text-accent font-semibold font-mono">/</code>). Only <span className="text-white font-semibold">ONE</span> experience can be active at a time. Switching deactivates the other immediately without requiring a code redeployment.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[11px] font-mono text-muted-foreground">Active Public State:</span>
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-accent/15 border border-accent/40 text-accent flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+              {settings.activeDisplayMode === "PORTFOLIO" ? "PORTFOLIO ACTIVE" : "E-VISITING CARD ACTIVE"}
+            </span>
+          </div>
+        </div>
+
+        {/* Exclusive 2-Option Card Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-1">
+          {/* OPTION A: PORTFOLIO */}
+          <div
+            className={`rounded-2xl border transition-all p-5 flex flex-col justify-between relative overflow-hidden ${
+              settings.activeDisplayMode === "PORTFOLIO"
+                ? "bg-accent/5 border-accent shadow-[0_0_25px_rgba(16,185,129,0.12)] ring-1 ring-accent/40"
+                : "bg-surface-muted/40 border-surface-border opacity-75 hover:opacity-100"
+            }`}
+          >
+            <div className="space-y-4">
+              {/* Option Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                    settings.activeDisplayMode === "PORTFOLIO"
+                      ? "bg-accent text-accent-foreground shadow-sm"
+                      : "bg-surface border border-surface-border text-muted-foreground"
+                  }`}>
+                    <Layers className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">Option A: Professional Portfolio</h3>
+                    <span className="text-[11px] font-mono text-muted-foreground">Full Developer Experience</span>
+                  </div>
+                </div>
+
+                {settings.activeDisplayMode === "PORTFOLIO" ? (
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-mono font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Active at /</span>
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-1 rounded-full bg-surface border border-surface-border text-muted-foreground text-[11px] font-mono">
+                    Inactive
+                  </span>
+                )}
+              </div>
+
+              {/* Visual Thumbnail / Preview */}
+              <div className="rounded-xl border border-surface-border bg-background/80 p-3 space-y-2 shadow-inner">
+                <div className="flex items-center justify-between pb-1.5 border-b border-surface-border/50 text-[10px] font-mono text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-rose-500/60" />
+                    <span className="w-2 h-2 rounded-full bg-amber-500/60" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500/60" />
+                    <span className="ml-1 text-slate-400">yourdomain.com/</span>
+                  </div>
+                  <span className="text-accent">Full Viewport</span>
+                </div>
+                <div className="space-y-1.5 py-1">
+                  <div className="h-4 bg-surface-muted rounded w-2/3" />
+                  <div className="h-2.5 bg-surface-muted/60 rounded w-5/6" />
+                  <div className="grid grid-cols-3 gap-1.5 pt-1">
+                    <div className="h-10 rounded bg-surface border border-surface-border flex flex-col justify-end p-1">
+                      <div className="h-1.5 bg-accent/40 rounded w-3/4" />
+                    </div>
+                    <div className="h-10 rounded bg-surface border border-surface-border flex flex-col justify-end p-1">
+                      <div className="h-1.5 bg-accent/40 rounded w-2/3" />
+                    </div>
+                    <div className="h-10 rounded bg-surface border border-surface-border flex flex-col justify-end p-1">
+                      <div className="h-1.5 bg-accent/40 rounded w-4/5" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Renders your comprehensive engineering portfolio at the root URL. Visitors see your interactive architecture blueprints, featured case studies, technology matrix, timeline, and inquiry portal.
+              </p>
+            </div>
+
+            {/* Exclusive Activation Button */}
+            <div className="pt-5 mt-auto">
+              <button
+                type="button"
+                disabled={settings.activeDisplayMode === "PORTFOLIO" || isSwitchingMode}
+                onClick={() => handleSwitchMode("PORTFOLIO")}
+                className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                  settings.activeDisplayMode === "PORTFOLIO"
+                    ? "bg-accent/20 border border-accent/40 text-accent cursor-default"
+                    : "bg-surface hover:bg-surface-border border border-surface-border text-white hover:border-accent/40 shadow-sm"
+                }`}
+              >
+                {settings.activeDisplayMode === "PORTFOLIO" ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Currently Active at /</span>
+                  </>
+                ) : (
+                  <>
+                    <Layers className="w-3.5 h-3.5 text-accent" />
+                    <span>{isSwitchingMode ? "Activating..." : "Activate Portfolio Mode"}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* OPTION B: PREMIUM E-VISITING CARD */}
+          <div
+            className={`rounded-2xl border transition-all p-5 flex flex-col justify-between relative overflow-hidden ${
+              settings.activeDisplayMode === "DIGITAL_CARD"
+                ? "bg-accent/5 border-accent shadow-[0_0_25px_rgba(16,185,129,0.12)] ring-1 ring-accent/40"
+                : "bg-surface-muted/40 border-surface-border opacity-75 hover:opacity-100"
+            }`}
+          >
+            <div className="space-y-4">
+              {/* Option Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                    settings.activeDisplayMode === "DIGITAL_CARD"
+                      ? "bg-accent text-accent-foreground shadow-sm"
+                      : "bg-surface border border-surface-border text-muted-foreground"
+                  }`}>
+                    <Smartphone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">Option B: Premium E-Visiting Card</h3>
+                    <span className="text-[11px] font-mono text-muted-foreground">Mobile-First Digital Identity</span>
+                  </div>
+                </div>
+
+                {settings.activeDisplayMode === "DIGITAL_CARD" ? (
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-mono font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Active at /</span>
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-1 rounded-full bg-surface border border-surface-border text-muted-foreground text-[11px] font-mono">
+                    Inactive
+                  </span>
+                )}
+              </div>
+
+              {/* Visual Thumbnail / Preview */}
+              <div className="rounded-xl border border-surface-border bg-background/80 p-3 space-y-2 shadow-inner">
+                <div className="flex items-center justify-between pb-1.5 border-b border-surface-border/50 text-[10px] font-mono text-muted-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-rose-500/60" />
+                    <span className="w-2 h-2 rounded-full bg-amber-500/60" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500/60" />
+                    <span className="ml-1 text-slate-400">yourdomain.com/</span>
+                  </div>
+                  <span className="text-accent">Mobile-First Identity</span>
+                </div>
+                <div className="flex items-center gap-3 py-1">
+                  <div className="w-10 h-10 rounded-xl bg-accent/20 border border-accent/40 shrink-0 flex items-center justify-center text-accent text-xs font-bold">
+                    ID
+                  </div>
+                  <div className="space-y-1 flex-1">
+                    <div className="h-3 bg-surface-muted rounded w-3/4" />
+                    <div className="h-2 bg-surface-muted/60 rounded w-1/2" />
+                  </div>
+                  <div className="w-6 h-6 rounded bg-surface border border-surface-border flex items-center justify-center shrink-0">
+                    <QrCode className="w-3.5 h-3.5 text-accent" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-1 pt-0.5">
+                  <div className="h-5 rounded bg-surface border border-surface-border flex items-center justify-center text-[8px] text-muted-foreground font-mono">
+                    Call
+                  </div>
+                  <div className="h-5 rounded bg-surface border border-surface-border flex items-center justify-center text-[8px] text-muted-foreground font-mono">
+                    WhatsApp
+                  </div>
+                  <div className="h-5 rounded bg-surface border border-surface-border flex items-center justify-center text-[8px] text-muted-foreground font-mono">
+                    Save .vcf
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Renders a luxury digital visiting card at the root URL. Features 1-tap contact saving (.vcf), direct phone/WhatsApp dialers, canonical QR code generator, and external links.
+              </p>
+            </div>
+
+            {/* Exclusive Activation Button & Studio Link */}
+            <div className="pt-5 mt-auto space-y-2">
+              <button
+                type="button"
+                disabled={settings.activeDisplayMode === "DIGITAL_CARD" || isSwitchingMode}
+                onClick={() => handleSwitchMode("DIGITAL_CARD")}
+                className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                  settings.activeDisplayMode === "DIGITAL_CARD"
+                    ? "bg-accent/20 border border-accent/40 text-accent cursor-default"
+                    : "bg-accent hover:bg-accent-hover text-accent-foreground shadow-glow"
+                }`}
+              >
+                {settings.activeDisplayMode === "DIGITAL_CARD" ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Currently Active at /</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{isSwitchingMode ? "Activating..." : "Activate E-Visiting Card Mode"}</span>
+                  </>
+                )}
+              </button>
+
+              <Link
+                href="/admin/card"
+                className="w-full py-2 px-3 rounded-xl bg-surface border border-surface-border hover:border-accent/40 text-[11px] font-mono text-muted-foreground hover:text-white flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <span>Customize E-Visiting Card Content & Links</span>
+                <ArrowRight className="w-3 h-3 text-accent" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Identity & Headline */}
       <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-6 space-y-4 shadow-card">

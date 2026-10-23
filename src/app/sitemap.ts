@@ -3,6 +3,20 @@ import { db } from "@/lib/db";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfolio.internal";
+  const settings = await db.getSiteSettings();
+
+  // If Portfolio is inactive, do not expose project case study routes in sitemap
+  if (settings.activeDisplayMode === "DIGITAL_CARD") {
+    return [
+      {
+        url: siteUrl,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 1.0,
+      },
+    ];
+  }
+
   const projects = await db.getPublishedProjects();
 
   const projectRoutes: MetadataRoute.Sitemap = projects.map((p) => ({

@@ -198,5 +198,26 @@ model SiteSettings {
   accentColor      String   @default("#10b981") // Cyber emerald
   metaTitle        String   @default("Sirajum Munir | Staff Software Engineer & Product Architect")
   metaDescription  String   @default("Portfolio of real distributed systems, microservices, cloud platforms, and full-stack digital products.")
+
+  // Single-Domain Display Mode ("PORTFOLIO" | "DIGITAL_CARD")
+  activeDisplayMode String  @default("PORTFOLIO")
+
+  // Premium E-Visiting Card specific fields
+  cardName         String?
+  cardTitle        String?
+  cardCompany      String?
+  cardBio          String?  @db.Text
+  cardAvatarUrl    String?
+  cardPhone        String?
+  cardWhatsapp     String?
+  cardEmail        String?
+  cardLocation     String?
+  cardWebsite      String?
+  cardLinkedin     String?
+  cardGithub       String?
+  cardTwitter      String?
+  cardResumeUrl    String?
+  cardCustomLinks  String?  @db.Text
+
   updatedAt        DateTime @updatedAt
 }

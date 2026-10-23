@@ -9,6 +9,8 @@ import {
   experienceSchema,
   achievementSchema,
   siteSettingsSchema,
+  displayModeSchema,
+  digitalCardSchema,
 } from "@/lib/validations";
 import { ProjectCaseStudy, ExperienceItem, AchievementItem } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -190,6 +192,56 @@ export async function saveSiteSettingsAction(data: unknown) {
     return {
       success: false,
       error: err instanceof Error ? err.message : "Failed to update settings.",
+    };
+  }
+}
+
+export async function saveActiveDisplayModeAction(mode: "PORTFOLIO" | "DIGITAL_CARD") {
+  await requireAdmin();
+  const parsed = displayModeSchema.safeParse({ activeDisplayMode: mode });
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: "Invalid display mode specified. Must be PORTFOLIO or DIGITAL_CARD.",
+    };
+  }
+
+  try {
+    const updated = await db.updateSiteSettings({
+      activeDisplayMode: parsed.data.activeDisplayMode,
+    });
+    revalidatePath("/", "layout");
+    revalidatePath("/admin/settings");
+    revalidatePath("/admin/card");
+    return { success: true, activeDisplayMode: updated.activeDisplayMode, settings: updated };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to activate display mode.",
+    };
+  }
+}
+
+export async function saveDigitalCardAction(data: unknown) {
+  await requireAdmin();
+  const parsed = digitalCardSchema.safeParse(data);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.errors[0]?.message || "Invalid digital card format",
+    };
+  }
+
+  try {
+    const updated = await db.updateSiteSettings(parsed.data);
+    revalidatePath("/", "layout");
+    revalidatePath("/admin/settings");
+    revalidatePath("/admin/card");
+    return { success: true, settings: updated };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to save digital card.",
     };
   }
 }

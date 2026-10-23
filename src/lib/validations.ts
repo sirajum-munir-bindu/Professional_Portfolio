@@ -79,6 +79,46 @@ export const siteSettingsSchema = z.object({
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color code"),
   metaTitle: z.string().min(5),
   metaDescription: z.string().min(20),
+
+  // Website Display Mode & E-Visiting Card
+  activeDisplayMode: z.enum(["PORTFOLIO", "DIGITAL_CARD"]).default("PORTFOLIO").optional(),
+  cardName: z.string().nullable().optional(),
+  cardTitle: z.string().nullable().optional(),
+  cardCompany: z.string().nullable().optional(),
+  cardBio: z.string().nullable().optional(),
+  cardAvatarUrl: z.string().nullable().optional(),
+  cardPhone: z.string().nullable().optional(),
+  cardWhatsapp: z.string().nullable().optional(),
+  cardEmail: z.string().email().nullable().optional().or(z.literal("")),
+  cardLocation: z.string().nullable().optional(),
+  cardWebsite: z.string().url().nullable().optional().or(z.literal("")),
+  cardLinkedin: z.string().url().nullable().optional().or(z.literal("")),
+  cardGithub: z.string().url().nullable().optional().or(z.literal("")),
+  cardTwitter: z.string().url().nullable().optional().or(z.literal("")),
+  cardResumeUrl: z.string().nullable().optional().or(z.literal("")),
+  cardCustomLinks: z.string().nullable().optional(),
+});
+
+export const displayModeSchema = z.object({
+  activeDisplayMode: z.enum(["PORTFOLIO", "DIGITAL_CARD"]),
+});
+
+export const digitalCardSchema = z.object({
+  cardName: z.string().min(1, "Name is required").optional().nullable(),
+  cardTitle: z.string().optional().nullable(),
+  cardCompany: z.string().optional().nullable(),
+  cardBio: z.string().optional().nullable(),
+  cardAvatarUrl: z.string().optional().nullable(),
+  cardPhone: z.string().optional().nullable(),
+  cardWhatsapp: z.string().optional().nullable(),
+  cardEmail: z.string().email("Invalid email address").optional().nullable().or(z.literal("")),
+  cardLocation: z.string().optional().nullable(),
+  cardWebsite: z.string().url("Must be a valid URL").optional().nullable().or(z.literal("")),
+  cardLinkedin: z.string().url("Must be a valid URL").optional().nullable().or(z.literal("")),
+  cardGithub: z.string().url("Must be a valid URL").optional().nullable().or(z.literal("")),
+  cardTwitter: z.string().url("Must be a valid URL").optional().nullable().or(z.literal("")),
+  cardResumeUrl: z.string().optional().nullable().or(z.literal("")),
+  cardCustomLinks: z.string().optional().nullable(),
 });
 
 export const skillSchema = z.object({

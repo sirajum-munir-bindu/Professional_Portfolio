@@ -25,6 +25,24 @@ export const initialSiteSettings: SiteSettingsData = {
   accentColor: "#10b981",
   metaTitle: "Sirajum Munir | Staff Software Engineer & Cloud Architect",
   metaDescription: "Senior Engineering Portfolio showcasing mission-critical distributed systems, high-concurrency event pipelines, and interactive architecture blueprints.",
+
+  // Default display mode: PORTFOLIO
+  activeDisplayMode: "PORTFOLIO",
+  cardName: "Sirajum Munir",
+  cardTitle: "Software Developer & Systems Architect",
+  cardCompany: "Independent Engineering Consultant",
+  cardBio: "Building high-performance distributed systems, resilient cloud backends, and modern full-stack web platforms.",
+  cardAvatarUrl: null,
+  cardPhone: "+880 1700-000000",
+  cardWhatsapp: "+880 1700-000000",
+  cardEmail: "sirajummunir1102@gmail.com",
+  cardLocation: "Mirpur-6, Dhaka, Bangladesh",
+  cardWebsite: "",
+  cardLinkedin: "https://linkedin.com",
+  cardGithub: "https://github.com",
+  cardTwitter: "https://x.com",
+  cardResumeUrl: "",
+  cardCustomLinks: "[]",
 };
 
 export const initialProjects: ProjectCaseStudy[] = [

@@ -137,6 +137,8 @@ export interface ContactMessageItem {
   createdAt: string | Date;
 }
 
+export type ActiveDisplayMode = "PORTFOLIO" | "DIGITAL_CARD";
+
 export interface SiteSettingsData {
   id: string;
   displayName: string;
@@ -155,4 +157,22 @@ export interface SiteSettingsData {
   accentColor: string;
   metaTitle: string;
   metaDescription: string;
+
+  // Website Display Mode & Premium E-Visiting Card
+  activeDisplayMode: ActiveDisplayMode;
+  cardName?: string | null;
+  cardTitle?: string | null;
+  cardCompany?: string | null;
+  cardBio?: string | null;
+  cardAvatarUrl?: string | null;
+  cardPhone?: string | null;
+  cardWhatsapp?: string | null;
+  cardEmail?: string | null;
+  cardLocation?: string | null;
+  cardWebsite?: string | null;
+  cardLinkedin?: string | null;
+  cardGithub?: string | null;
+  cardTwitter?: string | null;
+  cardResumeUrl?: string | null;
+  cardCustomLinks?: string | null;
 }
