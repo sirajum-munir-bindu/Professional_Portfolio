@@ -8,7 +8,10 @@ interface Props {
 
 export default async function EditProjectPage({ params }: Props) {
   const { id } = await params;
-  const project = await db.getProjectById(id);
+  const [project, categories] = await Promise.all([
+    db.getProjectById(id),
+    db.getProjectCategories(),
+  ]);
 
   if (!project) {
     notFound();
@@ -16,7 +19,7 @@ export default async function EditProjectPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      <ProjectForm initialData={project} />
+      <ProjectForm initialData={project} availableCategories={categories} />
     </div>
   );
 }

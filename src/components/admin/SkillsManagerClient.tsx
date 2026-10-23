@@ -101,7 +101,7 @@ export function SkillsManagerClient({ initialCategories }: SkillsManagerClientPr
               visible: true,
             })
           }
-          className="px-4 py-2 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-colors flex items-center justify-center gap-1.5 shadow-glow"
+          className="w-full sm:w-auto px-4 py-2 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-colors flex items-center justify-center gap-1.5 shadow-glow"
         >
           <Plus className="w-4 h-4" />
           <span>Add Stack Capability</span>
@@ -110,7 +110,7 @@ export function SkillsManagerClient({ initialCategories }: SkillsManagerClientPr
 
       {/* Edit / New Modal / Panel */}
       {editingSkill && (
-        <form onSubmit={handleSave} className="p-6 rounded-2xl bg-surface border border-accent/40 shadow-card space-y-4 max-w-xl">
+        <form onSubmit={handleSave} className="p-4 sm:p-6 rounded-2xl bg-surface border border-accent/40 shadow-card space-y-4 max-w-xl">
           <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
             {editingSkill.id ? "Edit Capability" : "Add Technical Capability"}
           </h3>

@@ -19,6 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${settings.displayName}`,
     },
     description: settings.metaDescription,
+    icons: {
+      icon: settings.avatarUrl || "/favicon.ico",
+      shortcut: settings.avatarUrl || "/favicon.ico",
+      apple: settings.avatarUrl || "/favicon.ico",
+    },
     keywords: [
       "Software Engineer",
       "Cloud Architect",
@@ -51,15 +56,47 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await db.getSiteSettings();
+  const accentHex =
+    settings?.accentColor && /^#[0-9a-fA-F]{6}$/.test(settings.accentColor)
+      ? settings.accentColor
+      : "#10b981";
+
+  const cleanHex = accentHex.replace("#", "");
+  const r = parseInt(cleanHex.substring(0, 2), 16);
+  const g = parseInt(cleanHex.substring(2, 4), 16);
+  const b = parseInt(cleanHex.substring(4, 6), 16);
+
+  const hoverR = Math.max(0, Math.round(r * 0.85));
+  const hoverG = Math.max(0, Math.round(g * 0.85));
+  const hoverB = Math.max(0, Math.round(b * 0.85));
+  const hoverHex = `#${hoverR.toString(16).padStart(2, "0")}${hoverG.toString(16).padStart(2, "0")}${hoverB.toString(16).padStart(2, "0")}`;
+
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href={settings.avatarUrl || "/favicon.ico"} sizes="any" />
+        {settings.avatarUrl && (
+          <link rel="apple-touch-icon" href={settings.avatarUrl} />
+        )}
+        <style
+          id="theme-dynamic-accent"
+          dangerouslySetInnerHTML={{
+            __html: `
+              :root {
+                --accent: ${accentHex};
+                --accent-hover: ${hoverHex};
+                --accent-subtle: rgba(${r}, ${g}, ${b}, 0.14);
+                --accent-glow: rgba(${r}, ${g}, ${b}, 0.35);
+              }
+            `,
+          }}
+        />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-accent selection:text-accent-foreground">
         {children}

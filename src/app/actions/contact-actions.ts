@@ -43,7 +43,7 @@ export async function submitContactForm(
     // Silently return success to mislead spambots
     return {
       success: true,
-      message: "Your message has been dispatched to Alexander's direct inbox. Expect a response within 24 business hours.",
+      message: "Your message has been dispatched to Sirajum's direct inbox. Expect a response within 24 business hours.",
     };
   }
 

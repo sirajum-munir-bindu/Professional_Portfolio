@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
+import fs from "fs";
+import path from "path";
 import {
   initialProjects,
+  initialProjectCategories,
   initialSkillCategories,
   initialExperience,
   initialEducation,
@@ -9,6 +12,7 @@ import {
 } from "./fallback-data";
 import {
   ProjectCaseStudy,
+  ProjectCategoryItem,
   SkillCategoryWithSkills,
   ExperienceItem,
   EducationItem,
@@ -20,7 +24,11 @@ import {
 declare global {
   // eslint-disable-next-line no-var
   var prismaGlobal: PrismaClient | undefined;
+  // eslint-disable-next-line no-var
+  var dataStoreGlobal: ResilientDataStore | undefined;
 }
+
+const LOCAL_STORE_FILE = path.join(process.cwd(), "prisma", "local-data.json");
 
 export const prisma =
   globalThis.prismaGlobal ??
@@ -35,6 +43,7 @@ if (process.env.NODE_ENV !== "production") {
 // In-memory runtime cache/fallback store for when database is not yet connected or during local static export
 class ResilientDataStore {
   private projects: ProjectCaseStudy[] = [...initialProjects];
+  private projectCategories: ProjectCategoryItem[] = [...initialProjectCategories];
   private skillCategories: SkillCategoryWithSkills[] = [...initialSkillCategories];
   private experience: ExperienceItem[] = [...initialExperience];
   private education: EducationItem[] = [...initialEducation];
@@ -46,7 +55,7 @@ class ResilientDataStore {
       name: "Marcus Vance",
       email: "marcus.v@techfoundry.io",
       subject: "Principal Cloud Architecture Consulting",
-      message: "Hello Alexander, we reviewed your work on Nexus Stream and would love to consult with you on our high-throughput payment broker migration this quarter.",
+      message: "Hello Sirajum, we reviewed your work on Nexus Stream and would love to consult with you on our high-throughput payment broker migration this quarter.",
       category: "CONSULTING",
       status: "UNREAD",
       createdAt: new Date(Date.now() - 3600000 * 4),
@@ -62,6 +71,47 @@ class ResilientDataStore {
       createdAt: new Date(Date.now() - 3600000 * 28),
     },
   ];
+
+  constructor() {
+    this.loadFromDisk();
+  }
+
+  private loadFromDisk() {
+    try {
+      if (fs.existsSync(LOCAL_STORE_FILE)) {
+        const raw = fs.readFileSync(LOCAL_STORE_FILE, "utf-8");
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed.projectCategories)) this.projectCategories = parsed.projectCategories;
+        if (Array.isArray(parsed.projects)) this.projects = parsed.projects;
+        if (Array.isArray(parsed.skillCategories)) this.skillCategories = parsed.skillCategories;
+        if (Array.isArray(parsed.experience)) this.experience = parsed.experience;
+        if (Array.isArray(parsed.education)) this.education = parsed.education;
+        if (Array.isArray(parsed.achievements)) this.achievements = parsed.achievements;
+        if (parsed.settings) this.settings = parsed.settings;
+        if (Array.isArray(parsed.messages)) this.messages = parsed.messages;
+      }
+    } catch {
+      // Ignore disk load error
+    }
+  }
+
+  private saveToDisk() {
+    try {
+      const data = {
+        projectCategories: this.projectCategories,
+        projects: this.projects,
+        skillCategories: this.skillCategories,
+        experience: this.experience,
+        education: this.education,
+        achievements: this.achievements,
+        settings: this.settings,
+        messages: this.messages,
+      };
+      fs.writeFileSync(LOCAL_STORE_FILE, JSON.stringify(data, null, 2), "utf-8");
+    } catch {
+      // Ignore disk save error
+    }
+  }
 
   async getPublishedProjects(): Promise<ProjectCaseStudy[]> {
     try {
@@ -311,6 +361,7 @@ class ResilientDataStore {
     } else {
       this.projects.push(cleanProject);
     }
+    this.saveToDisk();
     return cleanProject;
   }
 
@@ -325,6 +376,7 @@ class ResilientDataStore {
     const idx = this.projects.findIndex((p) => p.id === id);
     if (idx >= 0) {
       this.projects.splice(idx, 1);
+      this.saveToDisk();
       return true;
     }
     return false;
@@ -483,6 +535,7 @@ class ResilientDataStore {
 
   async updateSiteSettings(updates: Partial<SiteSettingsData>): Promise<SiteSettingsData> {
     this.settings = { ...this.settings, ...updates };
+    this.saveToDisk();
     try {
       if (process.env.DATABASE_URL) {
         await prisma.siteSettings.upsert({
@@ -563,7 +616,119 @@ class ResilientDataStore {
       // fallback
     }
   }
+
+  async getProjectCategories(onlyVisible = false): Promise<ProjectCategoryItem[]> {
+    try {
+      if (process.env.DATABASE_URL) {
+        const rows = await prisma.projectCategory.findMany({
+          where: onlyVisible ? { visible: true } : undefined,
+          orderBy: { order: "asc" },
+        });
+        if (rows && rows.length > 0) {
+          return rows.map((r) => ({
+            id: r.id,
+            name: r.name,
+            slug: r.slug,
+            order: r.order,
+            visible: r.visible,
+          }));
+        }
+      }
+    } catch {
+      // fallback
+    }
+    const list = onlyVisible
+      ? this.projectCategories.filter((c) => c.visible)
+      : this.projectCategories;
+    return [...list].sort((a, b) => a.order - b.order);
+  }
+
+  async upsertProjectCategory(category: Partial<ProjectCategoryItem> & { name: string }): Promise<ProjectCategoryItem> {
+    const slug =
+      category.slug ||
+      category.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    const id = category.id || `pcat-${Date.now()}`;
+    const cleanCategory: ProjectCategoryItem = {
+      id,
+      name: category.name,
+      slug,
+      order: category.order ?? (this.projectCategories.length + 1),
+      visible: category.visible !== false,
+    };
+
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.projectCategory.upsert({
+          where: { id },
+          create: {
+            id,
+            name: cleanCategory.name,
+            slug: cleanCategory.slug,
+            order: cleanCategory.order,
+            visible: cleanCategory.visible,
+          },
+          update: {
+            name: cleanCategory.name,
+            slug: cleanCategory.slug,
+            order: cleanCategory.order,
+            visible: cleanCategory.visible,
+          },
+        });
+      }
+    } catch {
+      // fallback
+    }
+
+    const idx = this.projectCategories.findIndex((c) => c.id === id);
+    if (idx >= 0) {
+      this.projectCategories[idx] = cleanCategory;
+    } else {
+      this.projectCategories.push(cleanCategory);
+    }
+    this.saveToDisk();
+    return cleanCategory;
+  }
+
+  async toggleProjectCategoryVisibility(id: string, visible: boolean): Promise<void> {
+    const cat = this.projectCategories.find((c) => c.id === id);
+    if (cat) cat.visible = visible;
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.projectCategory.update({
+          where: { id },
+          data: { visible },
+        });
+      }
+    } catch {
+      // fallback
+    }
+    this.saveToDisk();
+  }
+
+  async deleteProjectCategory(id: string): Promise<boolean> {
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.projectCategory.delete({ where: { id } });
+      }
+    } catch {
+      // fallback
+    }
+    const idx = this.projectCategories.findIndex((c) => c.id === id);
+    if (idx >= 0) {
+      this.projectCategories.splice(idx, 1);
+      this.saveToDisk();
+      return true;
+    }
+    return false;
+  }
 }
 
-// Global data repository singleton
-export const db = new ResilientDataStore();
+// Global data repository singleton with dev hot-reload preservation
+export const db = globalThis.dataStoreGlobal ?? new ResilientDataStore();
+
+if (process.env.NODE_ENV !== "production") {
+  globalThis.dataStoreGlobal = db;
+}

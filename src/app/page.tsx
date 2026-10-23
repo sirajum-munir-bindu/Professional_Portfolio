@@ -8,18 +8,27 @@ import { TechnologyMatrix } from "@/components/home/TechnologyMatrix";
 import { ExperienceTimeline } from "@/components/home/ExperienceTimeline";
 import { ContactSection } from "@/components/contact/ContactSection";
 
-export const revalidate = 3600; // ISR cache revalidation (1 hour)
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function HomePage() {
-  const [settings, projects, skillCategories, experience, education, achievements] =
-    await Promise.all([
-      db.getSiteSettings(),
-      db.getPublishedProjects(),
-      db.getSkillCategories(),
-      db.getExperience(),
-      db.getEducation(),
-      db.getAchievements(),
-    ]);
+  const [
+    settings,
+    projects,
+    projectCategories,
+    skillCategories,
+    experience,
+    education,
+    achievements,
+  ] = await Promise.all([
+    db.getSiteSettings(),
+    db.getPublishedProjects(),
+    db.getProjectCategories(),
+    db.getSkillCategories(),
+    db.getExperience(),
+    db.getEducation(),
+    db.getAchievements(),
+  ]);
 
   // JSON-LD structured data for search engine credibility
   const jsonLd = {
@@ -43,7 +52,10 @@ export default async function HomePage() {
 
       <main className="flex-1">
         <Hero settings={settings} />
-        <FeaturedProjects projects={projects} />
+        <FeaturedProjects
+          projects={projects}
+          availableCategories={projectCategories}
+        />
         <ArchitectureExplorer projects={projects} />
         <TechnologyMatrix categories={skillCategories} />
         <ExperienceTimeline

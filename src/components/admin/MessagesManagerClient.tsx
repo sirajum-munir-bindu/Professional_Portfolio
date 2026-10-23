@@ -51,13 +51,13 @@ export function MessagesManagerClient({ initialMessages }: MessagesManagerClient
   return (
     <div className="space-y-6">
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 p-1.5 rounded-xl bg-surface border border-surface-border w-fit">
+      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-xl bg-surface border border-surface-border w-full sm:w-fit overflow-x-auto">
         {["ALL", "UNREAD", "READ", "REPLIED"].map((status) => (
           <button
             key={status}
             type="button"
             onClick={() => setFilter(status)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
+            className={`flex-1 sm:flex-initial text-center px-3 py-1.5 rounded-lg text-xs font-mono transition-all whitespace-nowrap ${
               filter === status
                 ? "bg-accent text-accent-foreground font-semibold shadow-sm"
                 : "text-muted-foreground hover:text-white"
@@ -71,7 +71,7 @@ export function MessagesManagerClient({ initialMessages }: MessagesManagerClient
       {/* Split Inbox Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Messages List (5 cols) */}
-        <div className="lg:col-span-5 rounded-2xl bg-surface border border-surface-border p-4 shadow-card space-y-2 max-h-[750px] overflow-y-auto">
+        <div className="lg:col-span-5 rounded-2xl bg-surface border border-surface-border p-3 sm:p-4 shadow-card space-y-2 max-h-[360px] lg:max-h-[750px] overflow-y-auto">
           {filtered.length === 0 ? (
             <div className="text-center py-12 text-xs text-muted-foreground">
               No inquiries found in this category.
@@ -129,7 +129,7 @@ export function MessagesManagerClient({ initialMessages }: MessagesManagerClient
         </div>
 
         {/* Selected Message Reader (7 cols) */}
-        <div className="lg:col-span-7 rounded-2xl bg-surface border border-surface-border p-6 sm:p-8 shadow-card">
+        <div className="lg:col-span-7 rounded-2xl bg-surface border border-surface-border p-4 sm:p-8 shadow-card">
           {selectedMessage ? (
             <div className="space-y-6">
               {/* Header */}

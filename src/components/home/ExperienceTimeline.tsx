@@ -34,7 +34,7 @@ export function ExperienceTimeline({
             {/* Experience Timeline Items */}
             <div className="space-y-6 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-surface-border">
               {experience.map((item) => (
-                <div key={item.id} className="relative pl-10 group">
+                <div key={item.id} className="relative pl-7 sm:pl-10 group">
                   {/* Timeline Dot */}
                   <div
                     className={`absolute left-2 top-2 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 ${
@@ -44,7 +44,7 @@ export function ExperienceTimeline({
                     }`}
                   />
 
-                  <div className="rounded-2xl bg-surface border border-surface-border p-6 shadow-card hover:border-accent/40 transition-colors">
+                  <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-6 shadow-card hover:border-accent/40 transition-colors">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-surface-border">
                       <div>
                         <h3 className="font-bold text-base text-white tracking-tight">

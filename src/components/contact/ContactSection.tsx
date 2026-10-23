@@ -105,7 +105,7 @@ export function ContactSection({ settings }: ContactSectionProps) {
           </div>
 
           {/* Contact Form (7 cols) */}
-          <div className="lg:col-span-7 rounded-2xl bg-surface border border-surface-border p-6 sm:p-8 shadow-card">
+          <div className="lg:col-span-7 rounded-2xl bg-surface border border-surface-border p-4 sm:p-8 shadow-card">
             {state?.success ? (
               <div className="p-8 rounded-xl bg-accent/10 border border-accent/30 text-center space-y-4">
                 <div className="w-12 h-12 rounded-full bg-accent/20 text-accent flex items-center justify-center mx-auto">

@@ -81,4 +81,37 @@ describe("Database Operations & Public Protection", () => {
     const check = await db.getProjectById(created.id);
     expect(check).toBeNull();
   });
+
+  it("manages project categories, CRUD, and frontend visibility hiding", async () => {
+    // 1. Create a category
+    const category = await db.upsertProjectCategory({
+      name: "Autonomous AI Agents",
+      visible: true,
+    });
+    expect(category.id).toBeDefined();
+    expect(category.slug).toBe("autonomous-ai-agents");
+
+    // 2. Verify it is visible in public list
+    const visibleList = await db.getProjectCategories(true);
+    expect(visibleList.some((c) => c.name === "Autonomous AI Agents")).toBe(true);
+
+    // 3. Hide category from frontend
+    await db.toggleProjectCategoryVisibility(category.id, false);
+
+    // 4. Verify it is no longer returned in public visible list
+    const hiddenList = await db.getProjectCategories(true);
+    expect(hiddenList.some((c) => c.name === "Autonomous AI Agents")).toBe(false);
+
+    // 5. Verify admin list still contains it
+    const allList = await db.getProjectCategories(false);
+    const adminFound = allList.find((c) => c.id === category.id);
+    expect(adminFound).toBeDefined();
+    expect(adminFound?.visible).toBe(false);
+
+    // 6. Delete category
+    const deleted = await db.deleteProjectCategory(category.id);
+    expect(deleted).toBe(true);
+    const postDelete = await db.getProjectCategories(false);
+    expect(postDelete.some((c) => c.id === category.id)).toBe(false);
+  });
 });

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
-import { Menu, X, Shield, ArrowUpRight } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 import { SiteSettingsData } from "@/types";
 
 interface HeaderProps {
@@ -29,6 +30,13 @@ export function Header({ settings }: HeaderProps) {
     { href: "/#contact", label: "Contact" },
   ];
 
+  const getInitials = (name: string) => {
+    if (!name) return "SM";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -44,15 +52,25 @@ export function Header({ settings }: HeaderProps) {
             href="/"
             className="flex items-center gap-3 group focus-visible:ring-2 focus-visible:ring-accent rounded-md p-1"
           >
-            <div className="w-8 h-8 rounded-lg bg-surface-muted border border-surface-border flex items-center justify-center font-mono text-sm font-bold text-accent group-hover:border-accent/40 transition-colors">
-              AW
+            <div className="w-8 h-8 rounded-lg bg-surface-muted border border-surface-border flex items-center justify-center font-mono text-sm font-bold text-accent group-hover:border-accent/40 transition-colors overflow-hidden relative shrink-0">
+              {settings.avatarUrl ? (
+                <Image
+                  src={settings.avatarUrl}
+                  alt={settings.displayName}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              ) : (
+                getInitials(settings.displayName)
+              )}
             </div>
             <div className="flex flex-col">
               <span className="font-semibold text-sm tracking-tight text-white group-hover:text-accent transition-colors">
                 {settings.displayName}
               </span>
               <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider hidden sm:inline">
-                Systems Architect
+                {settings.roleTitle || "Systems Architect"}
               </span>
             </div>
           </Link>
@@ -81,15 +99,6 @@ export function Header({ settings }: HeaderProps) {
                 <span>Available</span>
               </div>
             )}
-
-            <Link
-              href="/admin/dashboard"
-              className="p-1.5 rounded-lg border border-surface-border text-muted-foreground hover:text-white hover:border-white/20 transition-colors text-xs flex items-center gap-1.5"
-              title="Admin Portal"
-            >
-              <Shield className="w-3.5 h-3.5 text-accent" />
-              <span className="hidden lg:inline text-[11px] font-mono">Admin</span>
-            </Link>
 
             <Link
               href="#contact"
@@ -126,14 +135,6 @@ export function Header({ settings }: HeaderProps) {
               </Link>
             ))}
             <div className="pt-3 border-t border-surface-border flex flex-col gap-2">
-              <Link
-                href="/admin/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-xs font-mono text-muted-foreground hover:text-white flex items-center gap-2"
-              >
-                <Shield className="w-3.5 h-3.5 text-accent" />
-                Admin Dashboard
-              </Link>
               <Link
                 href="#contact"
                 onClick={() => setMobileMenuOpen(false)}

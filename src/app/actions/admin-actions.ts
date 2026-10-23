@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
   projectSchema,
+  projectCategorySchema,
   skillSchema,
   experienceSchema,
   achievementSchema,
@@ -219,6 +220,62 @@ export async function deleteMessageAction(id: string) {
     return {
       success: false,
       error: err instanceof Error ? err.message : "Failed to delete message.",
+    };
+  }
+}
+
+export async function saveProjectCategoryAction(data: unknown) {
+  await requireAdmin();
+  const parsed = projectCategorySchema.safeParse(data);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.errors[0]?.message || "Invalid category parameters",
+    };
+  }
+
+  try {
+    const saved = await db.upsertProjectCategory(parsed.data);
+    revalidatePath("/");
+    revalidatePath("/projects");
+    revalidatePath("/admin/projects");
+    return { success: true, category: saved };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to persist category.",
+    };
+  }
+}
+
+export async function toggleProjectCategoryVisibilityAction(id: string, visible: boolean) {
+  await requireAdmin();
+  try {
+    await db.toggleProjectCategoryVisibility(id, visible);
+    revalidatePath("/");
+    revalidatePath("/projects");
+    revalidatePath("/admin/projects");
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to toggle category visibility.",
+    };
+  }
+}
+
+export async function deleteProjectCategoryAction(id: string) {
+  await requireAdmin();
+  try {
+    const success = await db.deleteProjectCategory(id);
+    revalidatePath("/");
+    revalidatePath("/projects");
+    revalidatePath("/admin/projects");
+    return { success };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Failed to delete category.",
     };
   }
 }

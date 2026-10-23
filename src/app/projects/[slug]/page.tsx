@@ -137,8 +137,8 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
 
           {/* Structured Section 1: The Problem & The Solution */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="rounded-2xl bg-surface border border-surface-border p-6 sm:p-8 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-8 space-y-3">
               <div className="flex items-center gap-2 text-xs font-mono text-rose-400 font-semibold uppercase tracking-wider">
                 <AlertTriangle className="w-4 h-4" />
                 <span>The Engineering Challenge</span>
@@ -149,7 +149,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               </p>
             </div>
 
-            <div className="rounded-2xl bg-surface border border-surface-border p-6 sm:p-8 space-y-3">
+            <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-8 space-y-3">
               <div className="flex items-center gap-2 text-xs font-mono text-accent font-semibold uppercase tracking-wider">
                 <Lightbulb className="w-4 h-4" />
                 <span>Architectural Solution</span>
@@ -173,7 +173,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           )}
 
           {/* Structured Section 3: Technical Implementation Details */}
-          <div className="rounded-2xl bg-surface border border-surface-border p-6 sm:p-8 space-y-6">
+          <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-8 space-y-6">
             <div className="flex items-center gap-2 text-xs font-mono text-accent uppercase tracking-wider">
               <Cpu className="w-4 h-4" />
               <span>Core System Implementation</span>
@@ -216,7 +216,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           {/* Structured Section 4: Verified Outcomes & Lessons Learned */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {project.verifiedOutcomes && project.verifiedOutcomes.length > 0 && (
-              <div className="rounded-2xl bg-surface border border-surface-border p-6 sm:p-8 space-y-4">
+              <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-8 space-y-4">
                 <h3 className="text-base font-bold text-white font-mono flex items-center gap-2 text-accent">
                   <CheckCircle2 className="w-4 h-4" />
                   Verified Production Metrics
@@ -233,7 +233,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             )}
 
             {project.challengesLearned && (
-              <div className="rounded-2xl bg-surface border border-surface-border p-6 sm:p-8 space-y-4">
+              <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-8 space-y-4">
                 <h3 className="text-base font-bold text-white font-mono flex items-center gap-2 text-amber-400">
                   <Lightbulb className="w-4 h-4" />
                   Edge Cases & Lessons Learned
@@ -246,7 +246,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
 
           {/* Structured Section 5: Technologies Stack Grid */}
-          <div className="rounded-2xl bg-surface border border-surface-border p-6 sm:p-8 space-y-4">
+          <div className="rounded-2xl bg-surface border border-surface-border p-4 sm:p-8 space-y-4">
             <h3 className="text-sm font-mono uppercase tracking-wider text-white font-semibold">
               Applied Technologies & Tooling
             </h3>

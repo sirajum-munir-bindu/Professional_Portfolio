@@ -4,24 +4,38 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Github, ExternalLink, Layers, CheckCircle2 } from "lucide-react";
-import { ProjectCaseStudy } from "@/types";
+import { ProjectCaseStudy, ProjectCategoryItem } from "@/types";
 
 interface FeaturedProjectsProps {
   projects: ProjectCaseStudy[];
+  availableCategories?: ProjectCategoryItem[];
 }
 
-export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
+export function FeaturedProjects({ projects, availableCategories }: FeaturedProjectsProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
 
-  const categories = [
-    "ALL",
-    ...Array.from(new Set(projects.map((p) => p.category))),
-  ];
+  // Derive visible categories strictly from the backend categories configuration
+  const activeCategories = availableCategories
+    ? availableCategories.filter((c) => c.visible).sort((a, b) => a.order - b.order)
+    : [];
+
+  const visibleCategoryNames = availableCategories
+    ? activeCategories.map((c) => c.name)
+    : Array.from(new Set(projects.map((p) => p.category)));
+
+  const categories = ["ALL", ...visibleCategoryNames];
+
+  // Safeguard: if active filter was hidden in backend, fall back to "ALL"
+  const activeFilter = categories.includes(selectedCategory) ? selectedCategory : "ALL";
+
+  const visibleProjects = availableCategories
+    ? projects.filter((p) => visibleCategoryNames.includes(p.category))
+    : projects;
 
   const filteredProjects =
-    selectedCategory === "ALL"
-      ? projects
-      : projects.filter((p) => p.category === selectedCategory);
+    activeFilter === "ALL"
+      ? visibleProjects
+      : visibleProjects.filter((p) => p.category === activeFilter);
 
   return (
     <section id="projects" className="py-24 border-t border-surface-border/60">
@@ -49,7 +63,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                  selectedCategory === cat
+                  activeFilter === cat
                     ? "bg-accent text-accent-foreground font-semibold shadow-sm"
                     : "text-muted-foreground hover:text-white hover:bg-white/[0.04]"
                 }`}

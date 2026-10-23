@@ -1,8 +1,12 @@
-export type ProjectCategory =
-  | "Full-Stack System"
-  | "Cloud Architecture"
-  | "DevOps & SRE"
-  | "AI & Data Engineering";
+export interface ProjectCategoryItem {
+  id: string;
+  name: string;
+  slug: string;
+  order: number;
+  visible: boolean;
+}
+
+export type ProjectCategory = string;
 
 export interface ArchitectureNode {
   id: string;
@@ -136,8 +140,10 @@ export interface ContactMessageItem {
 export interface SiteSettingsData {
   id: string;
   displayName: string;
+  roleTitle?: string | null;
   headline: string;
   bio: string;
+  avatarUrl?: string | null;
   availableForWork: boolean;
   availabilityNote: string | null;
   primaryEmail: string;

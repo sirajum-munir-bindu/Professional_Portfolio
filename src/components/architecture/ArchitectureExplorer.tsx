@@ -105,7 +105,7 @@ export function ArchitectureExplorer({ projects }: ArchitectureExplorerProps) {
         {/* Interactive Diagram & Node Deep-Dive Split Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Interactive Topology Visual (7 cols) */}
-          <div className="lg:col-span-7 rounded-2xl bg-surface border border-surface-border p-6 shadow-card overflow-hidden">
+          <div className="lg:col-span-7 rounded-2xl bg-surface border border-surface-border p-4 sm:p-6 shadow-card overflow-hidden">
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-surface-border">
               <div>
                 <span className="text-xs font-mono font-semibold text-white">
@@ -115,7 +115,7 @@ export function ArchitectureExplorer({ projects }: ArchitectureExplorerProps) {
                   Click any node to inspect protocols & failover architecture
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-accent bg-accent/10 px-2.5 py-1 rounded-md border border-accent/20">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-accent bg-accent/10 px-2.5 py-1 rounded-md border border-accent/20 shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                 Active Blueprint
               </div>
@@ -130,7 +130,7 @@ export function ArchitectureExplorer({ projects }: ArchitectureExplorerProps) {
                     key={node.id}
                     type="button"
                     onClick={() => setSelectedNodeId(node.id)}
-                    className={`w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group focus-visible:ring-2 focus-visible:ring-accent ${
+                    className={`w-full text-left p-3 sm:p-4 rounded-xl border transition-all duration-200 flex items-center justify-between group focus-visible:ring-2 focus-visible:ring-accent ${
                       isSelected
                         ? "bg-surface-muted border-accent/70 shadow-glow"
                         : "bg-surface-muted/40 border-surface-border hover:border-white/20 hover:bg-surface-muted/70"
@@ -193,7 +193,7 @@ export function ArchitectureExplorer({ projects }: ArchitectureExplorerProps) {
           </div>
 
           {/* Node Inspector Deep-Dive Panel (5 cols) */}
-          <div className="lg:col-span-5 rounded-2xl bg-surface border border-surface-border p-6 sm:p-7 shadow-card space-y-6">
+          <div className="lg:col-span-5 rounded-2xl bg-surface border border-surface-border p-4 sm:p-7 shadow-card space-y-6">
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-surface-border">
               <div>
                 <div className="text-[11px] font-mono text-accent uppercase tracking-wider mb-1 flex items-center gap-1.5">

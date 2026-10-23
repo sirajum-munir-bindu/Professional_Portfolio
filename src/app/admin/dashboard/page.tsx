@@ -38,10 +38,10 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <Link
             href="/admin/projects/new"
-            className="px-4 py-2 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-colors flex items-center gap-1.5 shadow-glow"
+            className="w-full sm:w-auto justify-center px-4 py-2.5 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-colors flex items-center gap-1.5 shadow-glow"
           >
             <Plus className="w-4 h-4" />
             <span>New Architecture Blueprint</span>
@@ -125,7 +125,7 @@ export default async function AdminDashboardPage() {
       {/* Split Section: Recent Inquiries & Projects Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Recent Inquiries (7 cols) */}
-        <div className="lg:col-span-7 rounded-2xl bg-surface border border-surface-border p-6 shadow-card space-y-4">
+        <div className="lg:col-span-7 rounded-2xl bg-surface border border-surface-border p-4 sm:p-6 shadow-card space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-surface-border">
             <div>
               <h2 className="text-base font-bold text-white tracking-tight">
@@ -186,7 +186,7 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Live Published Status & Settings Snapshot (5 cols) */}
-        <div className="lg:col-span-5 rounded-2xl bg-surface border border-surface-border p-6 shadow-card space-y-4">
+        <div className="lg:col-span-5 rounded-2xl bg-surface border border-surface-border p-4 sm:p-6 shadow-card space-y-4">
           <div className="pb-3 border-b border-surface-border">
             <h2 className="text-base font-bold text-white tracking-tight">
               Site Profile Status
@@ -209,9 +209,9 @@ export default async function AdminDashboardPage() {
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-surface-muted/40 border border-surface-border flex items-center justify-between">
+            <div className="p-3 rounded-xl bg-surface-muted/40 border border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <span className="text-muted-foreground">Primary Inbound Email</span>
-              <span className="font-mono text-white/90">{siteSettings.primaryEmail}</span>
+              <span className="font-mono text-white/90 truncate max-w-[200px]">{siteSettings.primaryEmail}</span>
             </div>
 
             <div className="p-3 rounded-xl bg-surface-muted/40 border border-surface-border flex items-center justify-between">

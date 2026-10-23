@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Github, Linkedin, Twitter, Terminal, ArrowUp } from "lucide-react";
 import { SiteSettingsData } from "@/types";
 
@@ -15,12 +16,21 @@ export function Footer({ settings }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-surface-border/60">
           {/* Identity & Bio */}
           <div className="md:col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
+              {settings.avatarUrl && (
+                <div className="w-7 h-7 rounded-lg overflow-hidden relative border border-surface-border shrink-0">
+                  <Image
+                    src={settings.avatarUrl}
+                    alt={settings.displayName}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                  />
+                </div>
+              )}
               <span className="font-mono text-sm font-bold tracking-tight text-white">
                 {settings.displayName}
               </span>
-              <span className="text-xs text-muted-foreground font-mono">/</span>
-              <span className="text-xs text-accent font-mono">portfolio.sys</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
               {settings.headline}. Specializing in fault-tolerant distributed architectures, low-latency microservices, and modern Next.js product engineering.
@@ -117,9 +127,6 @@ export function Footer({ settings }: FooterProps) {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <p>&copy; {currentYear} {settings.displayName}. Built with Next.js 15, TypeScript & Tailwind CSS.</p>
           <div className="flex items-center gap-4">
-            <Link href="/admin/dashboard" className="hover:text-white transition-colors font-mono text-[11px]">
-              Admin Studio
-            </Link>
             <a
               href="#top"
               className="flex items-center gap-1 hover:text-white transition-colors"

@@ -2,7 +2,10 @@ import { db } from "@/lib/db";
 import { ProjectListClient } from "@/components/admin/ProjectListClient";
 
 export default async function AdminProjectsPage() {
-  const projects = await db.getAllProjects();
+  const [projects, categories] = await Promise.all([
+    db.getAllProjects(),
+    db.getProjectCategories(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -15,7 +18,10 @@ export default async function AdminProjectsPage() {
         </p>
       </div>
 
-      <ProjectListClient initialProjects={projects} />
+      <ProjectListClient
+        initialProjects={projects}
+        initialCategories={categories}
+      />
     </div>
   );
 }

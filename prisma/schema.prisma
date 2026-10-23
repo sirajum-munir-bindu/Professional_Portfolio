@@ -52,6 +52,16 @@ model Project {
   @@index([category])
 }
 
+model ProjectCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model ProjectTechnology {
   id        String   @id @default(cuid())
   projectId String
@@ -172,19 +182,21 @@ model ContactMessage {
 
 model SiteSettings {
   id               String   @id @default("default")
-  displayName      String   @default("Alexander Wright")
+  displayName      String   @default("Sirajum Munir")
+  roleTitle        String?  @default("Systems Architect") // Displayed below name in header (e.g. Systems Architect)
   headline         String   @default("Staff Software Engineer & Cloud Architect")
   bio              String   @db.Text
+  avatarUrl        String?  // Profile picture URL (can be uploaded in /admin/media)
   availableForWork Boolean  @default(true)
   availabilityNote String?  @default("Open for high-impact technical leadership and consulting")
-  primaryEmail     String   @default("alexander.wright.eng@gmail.com")
+  primaryEmail     String   @default("sirajum.munir.eng@gmail.com")
   location         String   @default("San Francisco, CA / Remote")
   githubUrl        String   @default("https://github.com")
   linkedinUrl      String   @default("https://linkedin.com")
   twitterUrl       String?
   resumeUrl        String?
   accentColor      String   @default("#10b981") // Cyber emerald
-  metaTitle        String   @default("Alexander Wright | Staff Software Engineer & Product Architect")
+  metaTitle        String   @default("Sirajum Munir | Staff Software Engineer & Product Architect")
   metaDescription  String   @default("Portfolio of real distributed systems, microservices, cloud platforms, and full-stack digital products.")
   updatedAt        DateTime @updatedAt
 }

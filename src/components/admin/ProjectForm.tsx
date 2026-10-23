@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveProjectAction } from "@/app/actions/admin-actions";
-import { ProjectCaseStudy, ArchitectureNode, ArchitectureEdge } from "@/types";
+import { ProjectCaseStudy, ProjectCategoryItem, ArchitectureNode, ArchitectureEdge } from "@/types";
 import {
   Save,
   ArrowLeft,
@@ -18,9 +18,10 @@ import Link from "next/link";
 
 interface ProjectFormProps {
   initialData?: ProjectCaseStudy | null;
+  availableCategories?: ProjectCategoryItem[];
 }
 
-export function ProjectForm({ initialData }: ProjectFormProps) {
+export function ProjectForm({ initialData, availableCategories = [] }: ProjectFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -327,10 +328,20 @@ export function ProjectForm({ initialData }: ProjectFormProps) {
               onChange={(e) => setCategory(e.target.value)}
               className="w-full px-3.5 py-2 rounded-xl bg-surface-muted border border-surface-border text-white text-xs"
             >
-              <option value="Cloud Architecture">Cloud Architecture</option>
-              <option value="Full-Stack System">Full-Stack System</option>
-              <option value="DevOps & SRE">DevOps & SRE</option>
-              <option value="AI & Data Engineering">AI & Data Engineering</option>
+              {availableCategories.length > 0 ? (
+                availableCategories.map((c) => (
+                  <option key={c.id} value={c.name}>
+                    {c.name} {!c.visible ? "(Hidden on frontend)" : ""}
+                  </option>
+                ))
+              ) : (
+                <>
+                  <option value="Cloud Architecture">Cloud Architecture</option>
+                  <option value="Full-Stack System">Full-Stack System</option>
+                  <option value="DevOps & SRE">DevOps & SRE</option>
+                  <option value="AI & Data Engineering">AI & Data Engineering</option>
+                </>
+              )}
             </select>
           </div>
 

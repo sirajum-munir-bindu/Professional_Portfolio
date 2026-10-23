@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ProjectCaseStudy } from "@/types";
+import { ProjectCaseStudy, ProjectCategoryItem } from "@/types";
 import { deleteProjectAction, saveProjectAction } from "@/app/actions/admin-actions";
+import { CategoryManagerModal } from "./CategoryManagerModal";
 import {
   Plus,
   Search,
@@ -16,14 +17,21 @@ import {
   Eye,
   Star,
   Network,
+  Tag,
 } from "lucide-react";
 
 interface ProjectListClientProps {
   initialProjects: ProjectCaseStudy[];
+  initialCategories?: ProjectCategoryItem[];
 }
 
-export function ProjectListClient({ initialProjects }: ProjectListClientProps) {
+export function ProjectListClient({
+  initialProjects,
+  initialCategories = [],
+}: ProjectListClientProps) {
   const [projects, setProjects] = useState<ProjectCaseStudy[]>(initialProjects);
+  const [categories, setCategories] = useState<ProjectCategoryItem[]>(initialCategories);
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -64,7 +72,7 @@ export function ProjectListClient({ initialProjects }: ProjectListClientProps) {
     <div className="space-y-6">
       {/* Search & Actions Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-md">
+        <div className="relative flex-1 max-w-md w-full">
           <input
             type="text"
             value={search}
@@ -75,19 +83,37 @@ export function ProjectListClient({ initialProjects }: ProjectListClientProps) {
           <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-3 top-3" />
         </div>
 
-        <Link
-          href="/admin/projects/new"
-          className="px-4 py-2 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-colors flex items-center justify-center gap-1.5 shadow-glow"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Architecture Blueprint</span>
-        </Link>
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={() => setCategoryModalOpen(true)}
+            className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-surface border border-surface-border text-white hover:bg-surface-muted hover:border-accent/40 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-subtle"
+          >
+            <Tag className="w-3.5 h-3.5 text-accent" />
+            <span>Category</span>
+          </button>
+
+          <Link
+            href="/admin/projects/new"
+            className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-colors flex items-center justify-center gap-1.5 shadow-glow whitespace-nowrap"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Blueprint</span>
+          </Link>
+        </div>
       </div>
+
+      <CategoryManagerModal
+        isOpen={categoryModalOpen}
+        onClose={() => setCategoryModalOpen(false)}
+        categories={categories}
+        onCategoriesChange={(updated) => setCategories(updated)}
+      />
 
       {/* Projects Table */}
       <div className="rounded-2xl bg-surface border border-surface-border overflow-hidden shadow-card">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full min-w-[620px] text-left text-xs">
             <thead className="bg-surface-muted/70 border-b border-surface-border font-mono text-muted-foreground uppercase text-[10px] tracking-wider">
               <tr>
                 <th className="py-3 px-4">Project</th>

@@ -1,20 +1,29 @@
-import { ProjectCaseStudy, SkillCategoryWithSkills, ExperienceItem, AchievementItem, SiteSettingsData, EducationItem } from "@/types";
+import { ProjectCaseStudy, ProjectCategoryItem, SkillCategoryWithSkills, ExperienceItem, AchievementItem, SiteSettingsData, EducationItem } from "@/types";
+
+export const initialProjectCategories: ProjectCategoryItem[] = [
+  { id: "pcat-1", name: "Cloud Architecture", slug: "cloud-architecture", order: 1, visible: true },
+  { id: "pcat-2", name: "Full-Stack System", slug: "full-stack-system", order: 2, visible: true },
+  { id: "pcat-3", name: "DevOps & SRE", slug: "devops-sre", order: 3, visible: true },
+  { id: "pcat-4", name: "AI & Data Engineering", slug: "ai-data-engineering", order: 4, visible: true },
+];
 
 export const initialSiteSettings: SiteSettingsData = {
   id: "default",
-  displayName: "Alexander Wright",
+  displayName: "Sirajum Munir",
+  roleTitle: "Systems Architect",
   headline: "Staff Software Engineer & Distributed Systems Architect",
   bio: "Designing and scaling resilient distributed backends, edge-native microservices, and interactive developer tooling. Specializing in high-throughput cloud architectures, Rust/Go microservices, and modern Next.js systems.",
+  avatarUrl: null,
   availableForWork: true,
   availabilityNote: "Available for select principal architecture consulting & executive engineering roles",
-  primaryEmail: "alexander.wright.eng@gmail.com",
+  primaryEmail: "sirajum.munir.eng@gmail.com",
   location: "San Francisco, CA / Hybrid Remote",
   githubUrl: "https://github.com",
   linkedinUrl: "https://linkedin.com",
   twitterUrl: "https://x.com",
   resumeUrl: "#resume",
   accentColor: "#10b981",
-  metaTitle: "Alexander Wright | Staff Software Engineer & Cloud Architect",
+  metaTitle: "Sirajum Munir | Staff Software Engineer & Cloud Architect",
   metaDescription: "Senior Engineering Portfolio showcasing mission-critical distributed systems, high-concurrency event pipelines, and interactive architecture blueprints.",
 };
 

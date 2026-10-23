@@ -14,6 +14,18 @@ export const contactFormSchema = z.object({
   honeyPot: z.string().max(0, "Anti-spam trigger").optional(), // Honeypot field for bot trapping
 });
 
+export const projectCategorySchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(2, "Name must be at least 2 characters").max(50),
+  slug: z
+    .string()
+    .min(2)
+    .regex(/^[a-z0-9-]+$/, "Slug must only contain lowercase letters, numbers, and hyphens")
+    .optional(),
+  order: z.number().int().default(0),
+  visible: z.boolean().default(true),
+});
+
 export const projectSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(3, "Title must be at least 3 characters").max(120),
@@ -52,8 +64,10 @@ export const projectSchema = z.object({
 
 export const siteSettingsSchema = z.object({
   displayName: z.string().min(2),
+  roleTitle: z.string().nullable().optional(),
   headline: z.string().min(5),
   bio: z.string().min(20),
+  avatarUrl: z.string().nullable().optional(),
   availableForWork: z.boolean(),
   availabilityNote: z.string().nullable().optional(),
   primaryEmail: z.string().email(),

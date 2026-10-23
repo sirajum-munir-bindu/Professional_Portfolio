@@ -66,7 +66,7 @@ export function AchievementsManagerClient({ initialAchievements }: AchievementsM
               order: items.length + 1,
             })
           }
-          className="px-4 py-2 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-colors flex items-center gap-1.5 shadow-glow"
+          className="w-full sm:w-auto justify-center px-4 py-2 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-colors flex items-center gap-1.5 shadow-glow"
         >
           <Plus className="w-4 h-4" />
           <span>Add Credential / Award</span>
@@ -74,7 +74,7 @@ export function AchievementsManagerClient({ initialAchievements }: AchievementsM
       </div>
 
       {editingItem && (
-        <form onSubmit={handleSave} className="p-6 rounded-2xl bg-surface border border-accent/40 shadow-card space-y-4 max-w-xl">
+        <form onSubmit={handleSave} className="p-4 sm:p-6 rounded-2xl bg-surface border border-accent/40 shadow-card space-y-4 max-w-xl">
           <h3 className="text-sm font-mono font-bold text-white uppercase tracking-wider">
             {editingItem.id ? "Edit Credential" : "Add Credential / Award"}
           </h3>

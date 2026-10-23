@@ -1,0 +1,926 @@
+{
+  "projectCategories": [
+    {
+      "id": "pcat-1",
+      "name": "Cloud Architecture",
+      "slug": "cloud-architecture",
+      "order": 1,
+      "visible": false
+    },
+    {
+      "id": "pcat-2",
+      "name": "Full-Stack System",
+      "slug": "full-stack-system",
+      "order": 2,
+      "visible": true
+    },
+    {
+      "id": "pcat-3",
+      "name": "DevOps & SRE",
+      "slug": "devops-sre",
+      "order": 3,
+      "visible": false
+    },
+    {
+      "id": "pcat-4",
+      "name": "AI & Data Engineering",
+      "slug": "ai-data-engineering",
+      "order": 4,
+      "visible": false
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-1",
+      "slug": "nexus-event-mesh",
+      "title": "Nexus Stream: High-Throughput Event Mesh",
+      "category": "Cloud Architecture",
+      "shortDescription": "Distributed real-time event broker processing 180k msgs/sec with sub-5ms p99 latency across multi-region Kubernetes clusters.",
+      "coverImage": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
+      "demoUrl": "https://nexus-mesh-preview.internal",
+      "githubUrl": "https://github.com/alexanderwright/nexus-stream",
+      "videoUrl": null,
+      "featured": true,
+      "published": true,
+      "order": 1,
+      "problemStatement": "Legacy monolithic message queues collapsed under bursty peak loads (>150k TPS), causing consumer lag of over 45 seconds and inconsistent ordering during node failover.",
+      "solutionOverview": "Engineered a partition-aware event distribution gateway with raft-backed consensus, zero-copy buffer pools in Go/Rust, and partitioned Kafka topic replication with automated backpressure telemetry.",
+      "architectureOverview": "Edge ingest reverse proxies terminate TLS and route gRPC streaming traffic directly into memory-mapped ring buffers before multi-AZ persistence and push-based SSE/WebSocket delivery.",
+      "keyFeatures": [
+        "Zero-copy serialization with Protocol Buffers and custom ring-buffer queues",
+        "Dynamic backpressure propagation preventing downstream consumer starvation",
+        "Multi-tenant isolation with adaptive rate limiters and cryptographic token verification",
+        "Real-time observability export via Prometheus, OpenTelemetry, and Grafana dashboards"
+      ],
+      "personalContribution": "Lead Architect: Designed core raft quorum protocol, implemented zero-copy ring buffers in Go, and oversaw live migration with 99.999% uptime.",
+      "verifiedOutcomes": [
+        "Reduced p99 ingestion latency from 85ms to 4.2ms",
+        "Cut monthly cloud compute costs by 42% ($38,000/mo reduction)",
+        "Maintained zero message loss across 3 simulated region failure drills"
+      ],
+      "challengesLearned": "Handling TCP socket starvation required tuning Linux kernel epoll buffers and socket reuse flags (`SO_REUSEPORT`).",
+      "technologies": [
+        {
+          "name": "Go / Golang",
+          "category": "Backend",
+          "order": 1
+        },
+        {
+          "name": "Apache Kafka",
+          "category": "Infrastructure",
+          "order": 2
+        },
+        {
+          "name": "Kubernetes (EKS)",
+          "category": "DevOps",
+          "order": 3
+        },
+        {
+          "name": "gRPC & Protobuf",
+          "category": "Networking",
+          "order": 4
+        },
+        {
+          "name": "Redis Cluster",
+          "category": "Database",
+          "order": 5
+        },
+        {
+          "name": "OpenTelemetry",
+          "category": "Observability",
+          "order": 6
+        }
+      ],
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Multi-cluster Grafana overview under 200k TPS synthetic load",
+          "isCover": true
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Telemetry latency distribution breakdown",
+          "isCover": false
+        }
+      ],
+      "architectureDiagram": {
+        "title": "Nexus Stream Production Topology",
+        "description": "Edge ingest routing through stateless proxy nodes into durable raft storage clusters.",
+        "nodes": [
+          {
+            "id": "node-clients",
+            "label": "Edge Clients & IoT",
+            "role": "Event Producers",
+            "description": "Thousands of distributed telemetry agents pushing events over HTTP/3 & gRPC.",
+            "tier": "frontend",
+            "status": "operational",
+            "techStack": [
+              "Next.js",
+              "Mobile SDK",
+              "gRPC-Web"
+            ]
+          },
+          {
+            "id": "node-envoy",
+            "label": "Envoy API Gateway",
+            "role": "Edge Ingress",
+            "description": "mTLS termination, edge rate limiting, and round-robin upstream routing.",
+            "tier": "api",
+            "status": "active",
+            "techStack": [
+              "Envoy",
+              "Lua Scripts",
+              "WASM Filter"
+            ]
+          },
+          {
+            "id": "node-auth",
+            "label": "Stateless Auth Gate",
+            "role": "Security & Auth",
+            "description": "Ed25519 asymmetric token verification under 0.8ms without hitting the primary database.",
+            "tier": "auth",
+            "status": "operational",
+            "techStack": [
+              "Go Auth Service",
+              "Vault",
+              "JWT"
+            ]
+          },
+          {
+            "id": "node-ingest",
+            "label": "Nexus Ingestion Workers",
+            "role": "Stream Processing",
+            "description": "Zero-copy memory ring buffers and dynamic batching into partitioned Kafka brokers.",
+            "tier": "queue",
+            "status": "optimized",
+            "techStack": [
+              "Go",
+              "Raft Consensus",
+              "Protobuf"
+            ]
+          },
+          {
+            "id": "node-storage",
+            "label": "Kafka Multi-AZ Cluster",
+            "role": "Durable Log",
+            "description": "Partitioned commit log across 3 Availability Zones with strict in-sync replica quorums.",
+            "tier": "database",
+            "status": "operational",
+            "techStack": [
+              "Apache Kafka",
+              "Zookeeper/KRaft",
+              "EBS GP3"
+            ]
+          },
+          {
+            "id": "node-cache",
+            "label": "Dragonfly / Redis",
+            "role": "Live State Cache",
+            "description": "In-memory subscriber routing table and sliding-window rate limit counters.",
+            "tier": "cache",
+            "status": "operational",
+            "techStack": [
+              "Redis 7.2",
+              "Memory Store"
+            ]
+          },
+          {
+            "id": "node-consumers",
+            "label": "Downstream Consumer Microservices",
+            "role": "Analytics & DB Sinks",
+            "description": "Scalable worker fleet consuming events into ClickHouse OLAP and Postgres OLTP.",
+            "tier": "infrastructure",
+            "status": "operational",
+            "techStack": [
+              "Rust",
+              "PostgreSQL",
+              "ClickHouse"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "node-clients",
+            "target": "node-envoy",
+            "label": "gRPC Stream",
+            "protocol": "gRPC"
+          },
+          {
+            "id": "e2",
+            "source": "node-envoy",
+            "target": "node-auth",
+            "label": "Token Validation",
+            "protocol": "TCP/TLS"
+          },
+          {
+            "id": "e3",
+            "source": "node-envoy",
+            "target": "node-ingest",
+            "label": "Validated Payload",
+            "protocol": "gRPC"
+          },
+          {
+            "id": "e4",
+            "source": "node-ingest",
+            "target": "node-cache",
+            "label": "Rate Limit Check",
+            "protocol": "TCP/TLS"
+          },
+          {
+            "id": "e5",
+            "source": "node-ingest",
+            "target": "node-storage",
+            "label": "Zero-Copy Append",
+            "protocol": "Async Queue"
+          },
+          {
+            "id": "e6",
+            "source": "node-storage",
+            "target": "node-consumers",
+            "label": "Push Notification",
+            "protocol": "Async Queue"
+          }
+        ]
+      }
+    },
+    {
+      "id": "proj-2",
+      "slug": "aurora-fintech-ledger",
+      "title": "Aurora Core: Double-Entry Immutable Ledger",
+      "category": "Full-Stack System",
+      "shortDescription": "Financial transaction engine supporting strict ACID guarantees, cryptographic audit trails, and multi-currency exchange balancing.",
+      "coverImage": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80",
+      "demoUrl": "https://aurora-ledger.internal",
+      "githubUrl": "https://github.com/alexanderwright/aurora-ledger",
+      "videoUrl": null,
+      "featured": true,
+      "published": true,
+      "order": 2,
+      "problemStatement": "Legacy financial system relied on single-entry balance rows that periodically drifted during race conditions, requiring manual reconciliation at end of day.",
+      "solutionOverview": "Constructed an immutable, append-only double-entry ledger in PostgreSQL with strict constraints, optimistic locking, and a Next.js administrative treasury portal.",
+      "architectureOverview": "Next.js App Router admin interface connects to a hardened transaction processor API with isolation-level serializable transactions and cryptographic hash chaining per account block.",
+      "keyFeatures": [
+        "Strict double-entry accounting with balanced credit/debit constraint assertions",
+        "Cryptographic SHA-256 block chaining guaranteeing tamper-evident audit records",
+        "Sub-millisecond ledger queries with customized B-tree and composite indexing",
+        "Comprehensive admin reconciliation studio with simulated multi-currency stress testing"
+      ],
+      "personalContribution": "Sole author of core SQL migration schema, transaction locking strategy, and full-stack administration dashboard.",
+      "verifiedOutcomes": [
+        "Eliminated 100% of balance discrepancies across 14M transactions",
+        "Passed SOC2 Type II compliance audit with zero discrepancies",
+        "Enabled audited real-time settlement in under 120ms"
+      ],
+      "challengesLearned": "Preventing deadlocks under concurrent debit/credit requests required deterministic account ID sorting before acquiring row-level locks.",
+      "technologies": [
+        {
+          "name": "TypeScript",
+          "category": "Frontend",
+          "order": 1
+        },
+        {
+          "name": "Next.js 15",
+          "category": "Full-Stack",
+          "order": 2
+        },
+        {
+          "name": "PostgreSQL",
+          "category": "Database",
+          "order": 3
+        },
+        {
+          "name": "Prisma ORM",
+          "category": "Backend",
+          "order": 4
+        },
+        {
+          "name": "Tailwind CSS",
+          "category": "Frontend",
+          "order": 5
+        },
+        {
+          "name": "Docker",
+          "category": "DevOps",
+          "order": 6
+        }
+      ],
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Auditor ledger verification interface and balance reconciliation",
+          "isCover": true
+        }
+      ],
+      "architectureDiagram": {
+        "title": "Aurora Ledger Isolation Blueprint",
+        "description": "ACID serializable pipeline enforcing deterministic lock ordering and cryptographic audit trails.",
+        "nodes": [
+          {
+            "id": "node-treasury",
+            "label": "Treasury Management UI",
+            "role": "Admin Portal",
+            "description": "Next.js React Server Components with real-time settlement telemetry.",
+            "tier": "frontend",
+            "status": "operational",
+            "techStack": [
+              "Next.js 15",
+              "React 19",
+              "Tailwind"
+            ]
+          },
+          {
+            "id": "node-ledger-api",
+            "label": "Ledger Engine API",
+            "role": "Transaction Orchestrator",
+            "description": "Applies deterministic account sorting, balance validation, and lock acquisition.",
+            "tier": "api",
+            "status": "operational",
+            "techStack": [
+              "Node.js",
+              "TypeScript",
+              "Zod"
+            ]
+          },
+          {
+            "id": "node-auth-guard",
+            "label": "RBAC & Session Validator",
+            "role": "Security Layer",
+            "description": "Strict permission verification with signed tamper-proof admin credentials.",
+            "tier": "auth",
+            "status": "operational",
+            "techStack": [
+              "Jose JWT",
+              "Bcrypt"
+            ]
+          },
+          {
+            "id": "node-db-primary",
+            "label": "PostgreSQL Primary (ACID)",
+            "role": "Serializable Store",
+            "description": "Append-only entry logs, deterministic table locks, and row-level constraints.",
+            "tier": "database",
+            "status": "operational",
+            "techStack": [
+              "PostgreSQL 16",
+              "Prisma",
+              "Composite Indexes"
+            ]
+          },
+          {
+            "id": "node-read-replica",
+            "label": "Reporting Read-Replica",
+            "role": "OLAP Query Replica",
+            "description": "Offloads read-heavy audit exports and balance history calculations.",
+            "tier": "database",
+            "status": "active",
+            "techStack": [
+              "PostgreSQL Replica",
+              "Streaming Replication"
+            ]
+          },
+          {
+            "id": "node-audit-s3",
+            "label": "Immutable Cold Vault",
+            "role": "Regulatory Archive",
+            "description": "Nightly cryptographic snapshots signed with KMS and stored on WORM storage.",
+            "tier": "infrastructure",
+            "status": "operational",
+            "techStack": [
+              "AWS S3 Object Lock",
+              "KMS"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "node-treasury",
+            "target": "node-ledger-api",
+            "label": "REST / Server Action",
+            "protocol": "HTTPS/REST"
+          },
+          {
+            "id": "e2",
+            "source": "node-ledger-api",
+            "target": "node-auth-guard",
+            "label": "Verify Session",
+            "protocol": "TCP/TLS"
+          },
+          {
+            "id": "e3",
+            "source": "node-ledger-api",
+            "target": "node-db-primary",
+            "label": "Serializable Transaction",
+            "protocol": "SQL Connection"
+          },
+          {
+            "id": "e4",
+            "source": "node-db-primary",
+            "target": "node-read-replica",
+            "label": "WAL Streaming",
+            "protocol": "TCP/TLS"
+          },
+          {
+            "id": "e5",
+            "source": "node-treasury",
+            "target": "node-read-replica",
+            "label": "Historical Audit Queries",
+            "protocol": "SQL Connection"
+          },
+          {
+            "id": "e6",
+            "source": "node-db-primary",
+            "target": "node-audit-s3",
+            "label": "Nightly Cryptographic Export",
+            "protocol": "HTTPS/REST"
+          }
+        ]
+      }
+    },
+    {
+      "id": "proj-3",
+      "slug": "chronos-distributed-scheduler",
+      "title": "Chronos: Distributed Cron & Workflow Orchestration",
+      "category": "DevOps & SRE",
+      "shortDescription": "Fault-tolerant cron scheduler executing over 1.2M automated batch jobs daily with exactly-once execution guarantees.",
+      "coverImage": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+      "demoUrl": null,
+      "githubUrl": "https://github.com/alexanderwright/chronos-engine",
+      "videoUrl": null,
+      "featured": true,
+      "published": true,
+      "order": 3,
+      "problemStatement": "Periodic batch tasks were handled by server-local crontabs that failed silently during AWS instance reboots, causing missed data warehouse aggregations and duplicate billing triggers.",
+      "solutionOverview": "Constructed a leader-elected scheduler daemon using Etcd leases, distributed lock fencing tokens, and automated heartbeat retries across worker pools.",
+      "architectureOverview": "Etcd election assigns master duties for dispatching job tasks into priority queues. Worker nodes acquire fencing tokens before executing jobs to avoid split-brain execution.",
+      "keyFeatures": [
+        "Leader election and auto-failover via Etcd v3 distributed leases",
+        "Fencing token validation preventing zombie workers from modifying state",
+        "Dynamic cron expression parser with timezone-aware execution offsets",
+        "Dead-letter queues with exponential backoff and Slack alerting webhooks"
+      ],
+      "personalContribution": "Designed fault-tolerance semantics, authored worker execution agent, and implemented web-based execution graph monitor.",
+      "verifiedOutcomes": [
+        "100% SLA adherence over 14 consecutive months",
+        "Processed 1.2M jobs daily with 0 duplicate executions",
+        "Cut incident triage time from 2 hours to under 3 minutes with unified job tracing"
+      ],
+      "challengesLearned": "Network partitions could allow stale leaders to dispatch work. Solving this required monotonic fencing tokens validated by recipient services.",
+      "technologies": [
+        {
+          "name": "Go / Golang",
+          "category": "Backend",
+          "order": 1
+        },
+        {
+          "name": "Etcd v3",
+          "category": "Infrastructure",
+          "order": 2
+        },
+        {
+          "name": "PostgreSQL",
+          "category": "Database",
+          "order": 3
+        },
+        {
+          "name": "Redis",
+          "category": "Cache",
+          "order": 4
+        },
+        {
+          "name": "Prometheus",
+          "category": "Observability",
+          "order": 5
+        },
+        {
+          "name": "Terraform",
+          "category": "DevOps",
+          "order": 6
+        }
+      ],
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Chronos job execution timeline and node health matrix",
+          "isCover": true
+        }
+      ],
+      "architectureDiagram": null
+    },
+    {
+      "id": "proj-4",
+      "slug": "synapse-ai-rag-gateway",
+      "title": "Synapse: Semantic Vector RAG & Governance Engine",
+      "category": "AI & Data Engineering",
+      "shortDescription": "Enterprise LLM retrieval-augmented generation gateway with streaming latency optimization, PII sanitization, and vector cache.",
+      "coverImage": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+      "demoUrl": "https://synapse-rag.internal",
+      "githubUrl": "https://github.com/alexanderwright/synapse-rag",
+      "videoUrl": null,
+      "featured": false,
+      "published": true,
+      "order": 4,
+      "problemStatement": "Internal teams faced high LLM inference costs and unverified hallucinations due to poor context chunking and duplicate semantic queries.",
+      "solutionOverview": "Architected a unified RAG proxy with hybrid dense-sparse vector search, semantic caching, and streaming token delivery with real-time prompt security filtering.",
+      "architectureOverview": "Client requests enter a Next.js App Router edge middleware that checks a cosine-similarity semantic vector cache in Redis before dispatching hybrid retrieval to Qdrant.",
+      "keyFeatures": [
+        "Semantic caching layer reducing duplicate embedding queries by 64%",
+        "Hybrid dense (vector) and sparse (BM25) re-ranking with cross-encoders",
+        "Real-time PII regex and prompt injection sanitization before model dispatch",
+        "Streaming SSE output with deterministic citation tracking"
+      ],
+      "personalContribution": "Implemented the semantic cache algorithm, vector indexing pipeline, and Next.js frontend playground.",
+      "verifiedOutcomes": [
+        "Reduced OpenAI monthly API spend by 58%",
+        "Achieved average retrieval response time under 180ms",
+        "Zero leakage of sensitive internal customer data across 800k queries"
+      ],
+      "challengesLearned": "Semantic cache invalidation when underlying documentation changed was solved via document version hashing and inverted vector indexes.",
+      "technologies": [
+        {
+          "name": "Python / FastAPI",
+          "category": "Backend",
+          "order": 1
+        },
+        {
+          "name": "Next.js 15",
+          "category": "Frontend",
+          "order": 2
+        },
+        {
+          "name": "Qdrant Vector DB",
+          "category": "Database",
+          "order": 3
+        },
+        {
+          "name": "Redis",
+          "category": "Cache",
+          "order": 4
+        },
+        {
+          "name": "OpenAI API",
+          "category": "AI",
+          "order": 5
+        },
+        {
+          "name": "Docker",
+          "category": "DevOps",
+          "order": 6
+        }
+      ],
+      "media": [
+        {
+          "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Semantic similarity score inspection and citation graph",
+          "isCover": true
+        }
+      ],
+      "architectureDiagram": null
+    }
+  ],
+  "skillCategories": [
+    {
+      "id": "cat-1",
+      "name": "Distributed Systems & Backend",
+      "order": 1,
+      "skills": [
+        {
+          "id": "s1",
+          "name": "Go / Golang",
+          "categoryId": "cat-1",
+          "categoryName": "Backend",
+          "iconName": "Cpu",
+          "shortDescription": "High-concurrency daemons, raft consensus, zero-copy socket buffers",
+          "evidenceNote": "Built Nexus Stream event mesh routing 180k msgs/sec",
+          "order": 1,
+          "visible": true
+        },
+        {
+          "id": "s2",
+          "name": "Node.js & TypeScript",
+          "categoryId": "cat-1",
+          "categoryName": "Backend",
+          "iconName": "Code",
+          "shortDescription": "Type-safe APIs, microservices, and high-performance server runtimes",
+          "evidenceNote": "Engineered Aurora Core double-entry ledger",
+          "order": 2,
+          "visible": true
+        },
+        {
+          "id": "s3",
+          "name": "gRPC & Protocol Buffers",
+          "categoryId": "cat-1",
+          "categoryName": "Backend",
+          "iconName": "Radio",
+          "shortDescription": "Low-latency binary inter-service RPC communication",
+          "evidenceNote": "Implemented protobuf streaming contracts for event mesh",
+          "order": 3,
+          "visible": true
+        },
+        {
+          "id": "s4",
+          "name": "Python (FastAPI / Asyncio)",
+          "categoryId": "cat-1",
+          "categoryName": "Backend",
+          "iconName": "Layers",
+          "shortDescription": "Data pipelines, vector search retrieval, and async services",
+          "evidenceNote": "Built Synapse AI RAG gateway and semantic cache",
+          "order": 4,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "id": "cat-2",
+      "name": "Databases & Storage Architecture",
+      "order": 2,
+      "skills": [
+        {
+          "id": "s5",
+          "name": "PostgreSQL & Prisma",
+          "categoryId": "cat-2",
+          "categoryName": "Databases",
+          "iconName": "Database",
+          "shortDescription": "ACID serializable transactions, index tuning, query plan analysis",
+          "evidenceNote": "Engineered Aurora immutable ledger schema with 0 discrepancies",
+          "order": 1,
+          "visible": true
+        },
+        {
+          "id": "s6",
+          "name": "Redis & In-Memory Stores",
+          "categoryId": "cat-2",
+          "categoryName": "Databases",
+          "iconName": "Zap",
+          "shortDescription": "Distributed locks, sliding-window rate limiters, pub/sub channels",
+          "evidenceNote": "Implemented semantic vector caching and token bucket limiters",
+          "order": 2,
+          "visible": true
+        },
+        {
+          "id": "s7",
+          "name": "Apache Kafka",
+          "categoryId": "cat-2",
+          "categoryName": "Databases",
+          "iconName": "Server",
+          "shortDescription": "Partitioning strategies, consumer groups, exact-once semantics",
+          "evidenceNote": "Managed multi-AZ Kafka cluster processing billions of events",
+          "order": 3,
+          "visible": true
+        },
+        {
+          "id": "s8",
+          "name": "Vector Databases (Qdrant/pgvector)",
+          "categoryId": "cat-2",
+          "categoryName": "Databases",
+          "iconName": "Sparkles",
+          "shortDescription": "HNSW indexing, cosine similarity, hybrid sparse/dense retrieval",
+          "evidenceNote": "Deployed production hybrid search for enterprise knowledge bases",
+          "order": 4,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "id": "cat-3",
+      "name": "Cloud, Infrastructure & DevOps",
+      "order": 3,
+      "skills": [
+        {
+          "id": "s9",
+          "name": "Kubernetes & EKS",
+          "categoryId": "cat-3",
+          "categoryName": "DevOps",
+          "iconName": "Container",
+          "shortDescription": "Cluster orchestration, custom operators, pod autoscaling, ingress",
+          "evidenceNote": "Orchestrated production microservices across 3 AWS regions",
+          "order": 1,
+          "visible": true
+        },
+        {
+          "id": "s10",
+          "name": "Terraform & IaC",
+          "categoryId": "cat-3",
+          "categoryName": "DevOps",
+          "iconName": "Terminal",
+          "shortDescription": "Modular cloud infrastructure provisioning with strict state locking",
+          "evidenceNote": "Automated AWS VPCs, EKS clusters, and RDS multi-AZ replicas",
+          "order": 2,
+          "visible": true
+        },
+        {
+          "id": "s11",
+          "name": "Docker & Container Security",
+          "categoryId": "cat-3",
+          "categoryName": "DevOps",
+          "iconName": "Shield",
+          "shortDescription": "Distroless minimal images, multi-stage builds, non-root users",
+          "evidenceNote": "Maintained secure baseline container images across engineering team",
+          "order": 3,
+          "visible": true
+        },
+        {
+          "id": "s12",
+          "name": "Observability (Prometheus/Grafana)",
+          "categoryId": "cat-3",
+          "categoryName": "DevOps",
+          "iconName": "Activity",
+          "shortDescription": "OpenTelemetry instrumentation, alerting rules, distributed tracing",
+          "evidenceNote": "Configured sub-second SLI/SLO dashboards for high-throughput brokers",
+          "order": 4,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "id": "cat-4",
+      "name": "Modern Web & Frontend Engineering",
+      "order": 4,
+      "skills": [
+        {
+          "id": "s13",
+          "name": "Next.js App Router (15)",
+          "categoryId": "cat-4",
+          "categoryName": "Frontend",
+          "iconName": "Globe",
+          "shortDescription": "React Server Components, server actions, targeted ISR caching",
+          "evidenceNote": "Architected portfolio and admin studio with sub-100ms INP",
+          "order": 1,
+          "visible": true
+        },
+        {
+          "id": "s14",
+          "name": "React 19 & TypeScript",
+          "categoryId": "cat-4",
+          "categoryName": "Frontend",
+          "iconName": "Code2",
+          "shortDescription": "State machines, custom hooks, accessible interactive visualizations",
+          "evidenceNote": "Built interactive SVG Architecture Explorer engine",
+          "order": 2,
+          "visible": true
+        },
+        {
+          "id": "s15",
+          "name": "Tailwind CSS & Design Systems",
+          "categoryId": "cat-4",
+          "categoryName": "Frontend",
+          "iconName": "Palette",
+          "shortDescription": "Design token architecture, dark-mode ergonomics, accessible contrast",
+          "evidenceNote": "Created custom dark graphite design system with cyber lime accents",
+          "order": 3,
+          "visible": true
+        }
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "id": "exp-1",
+      "company": "CloudScale Systems",
+      "role": "Staff Software Engineer / Distributed Systems Lead",
+      "location": "San Francisco, CA",
+      "startDate": "2023-03",
+      "endDate": null,
+      "current": true,
+      "type": "FULL_TIME",
+      "description": "Lead architect for core cloud ingestion infrastructure and real-time event streaming products.",
+      "highlights": [
+        "Architected global multi-region event mesh handling 180k+ events/sec across 14 enterprise tenants.",
+        "Mentored a team of 9 senior engineers across Go, Kubernetes, and platform observability disciplines.",
+        "Reduced 99th percentile ingestion latency by 88% through zero-copy buffer architecture in Go.",
+        "Saved $450,000 annually in AWS cross-AZ data transfer by optimizing inter-service topology."
+      ],
+      "order": 1
+    },
+    {
+      "id": "exp-2",
+      "company": "Vanguard Fintech Labs",
+      "role": "Senior Backend / Infrastructure Engineer",
+      "location": "New York, NY (Remote)",
+      "startDate": "2021-02",
+      "endDate": "2023-02",
+      "current": false,
+      "type": "FULL_TIME",
+      "description": "Engineered high-security financial transaction ledgers and automated regulatory reporting engines.",
+      "highlights": [
+        "Built immutable double-entry ledger in PostgreSQL handling $40M+ in daily transaction volume with 0 discrepancies.",
+        "Designed and deployed automated distributed cron scheduler running 1.2M jobs daily.",
+        "Spearheaded SOC2 Type II compliance technical remediation with automated cryptographic log sealing."
+      ],
+      "order": 2
+    },
+    {
+      "id": "exp-3",
+      "company": "Apex Digital Media",
+      "role": "Full-Stack Software Engineer",
+      "location": "Austin, TX",
+      "startDate": "2019-06",
+      "endDate": "2021-01",
+      "current": false,
+      "type": "FULL_TIME",
+      "description": "Developed high-traffic media publishing platforms, real-time analytics dashboards, and headless CMS integrations.",
+      "highlights": [
+        "Migrated monolithic frontend to Next.js with incremental static regeneration, improving Core Web Vitals to 98/100.",
+        "Designed real-time collaborative editorial preview system using WebSockets and Redis Pub/Sub."
+      ],
+      "order": 3
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-1",
+      "institution": "University of California, Berkeley",
+      "degree": "B.S. in Computer Science & Engineering",
+      "fieldOfStudy": "Distributed Systems & Computer Architecture",
+      "startDate": "2015-08",
+      "endDate": "2019-05",
+      "gradeOrHonor": "Magna Cum Laude (GPA: 3.92/4.0)",
+      "activities": "Lead Chair of Systems & Networking Student Group; ACM ICPC Regional Finalist",
+      "order": 1
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach-1",
+      "title": "AWS Certified Solutions Architect – Professional",
+      "issuer": "Amazon Web Services",
+      "date": "2024-04",
+      "category": "CERTIFICATION",
+      "url": "https://aws.amazon.com/verification",
+      "description": "Validated advanced technical expertise in multi-tier, fault-tolerant enterprise cloud architectures.",
+      "order": 1
+    },
+    {
+      "id": "ach-2",
+      "title": "1st Place Winner – Global High-Concurrency Cloud Hackathon",
+      "issuer": "Cloud Native Computing Foundation (CNCF)",
+      "date": "2023-10",
+      "category": "HACKATHON",
+      "url": "https://cncf.io",
+      "description": "Built a decentralized Raft consensus proxy that remained available during simulated 60% network partition.",
+      "order": 2
+    },
+    {
+      "id": "ach-3",
+      "title": "Keynote Speaker: 'Zero-Copy Microservices with Go & eBPF'",
+      "issuer": "GopherCon / Systems Summit",
+      "date": "2023-06",
+      "category": "TALK",
+      "url": "https://gophercon.com",
+      "description": "Presented practical production lessons on reducing Linux kernel context switches for socket I/O.",
+      "order": 3
+    },
+    {
+      "id": "ach-4",
+      "title": "Certified Kubernetes Administrator (CKA)",
+      "issuer": "The Linux Foundation & CNCF",
+      "date": "2022-08",
+      "category": "CERTIFICATION",
+      "url": "https://linuxfoundation.org",
+      "description": "Demonstrated production cluster provisioning, RBAC configuration, network policies, and troubleshooting.",
+      "order": 4
+    }
+  ],
+  "settings": {
+    "id": "default",
+    "displayName": "Sirajum Munir",
+    "roleTitle": "Software Developer ",
+    "headline": "Staff Software Engineer & Distributed Systems Architect",
+    "bio": "Designing and scaling resilient distributed backends, edge-native microservices, and interactive developer tooling. Specializing in high-throughput cloud architectures, Rust/Go microservices, and modern Next.js systems.",
+    "availableForWork": true,
+    "availabilityNote": "Available for select principal architecture consulting & executive engineering roles",
+    "primaryEmail": "sirajummunir1102@gmail.com",
+    "location": "Mirpur-6, Dhaka",
+    "githubUrl": "https://github.com",
+    "linkedinUrl": "https://linkedin.com",
+    "twitterUrl": "https://x.com",
+    "resumeUrl": "https://docs.google.com/document/d/1hhWT0wJlcB-slV8NfY2AXaw4oACi0fAQ/edit?usp=drive_link&ouid=110656604027137195799&rtpof=true&sd=true",
+    "accentColor": "#3b82f6",
+    "metaTitle": "Sirajum Munir | Staff Software Engineer & Cloud Architect",
+    "metaDescription": "Senior Engineering Portfolio showcasing mission-critical distributed systems, high-concurrency event pipelines, and interactive architecture blueprints.",
+    "avatarUrl": "data:image/jpeg;base64,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"
+  },
+  "messages": [
+    {
+      "id": "msg-demo-1",
+      "name": "Marcus Vance",
+      "email": "marcus.v@techfoundry.io",
+      "subject": "Principal Cloud Architecture Consulting",
+      "message": "Hello Sirajum, we reviewed your work on Nexus Stream and would love to consult with you on our high-throughput payment broker migration this quarter.",
+      "category": "CONSULTING",
+      "status": "UNREAD",
+      "createdAt": "2026-10-23T09:56:59.763Z"
+    },
+    {
+      "id": "msg-demo-2",
+      "name": "Elena Rostova",
+      "email": "elena@vanguardventures.com",
+      "subject": "Advisory Role: Distributed Storage Infrastructure",
+      "message": "We're expanding our portfolio in developer tooling and are looking for a staff-level technical advisor with deep expertise in Raft consensus and PostgreSQL scaling.",
+      "category": "JOB_OPPORTUNITY",
+      "status": "READ",
+      "createdAt": "2026-10-22T09:56:59.763Z"
+    }
+  ]
+}

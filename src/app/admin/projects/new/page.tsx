@@ -1,9 +1,12 @@
+import { db } from "@/lib/db";
 import { ProjectForm } from "@/components/admin/ProjectForm";
 
-export default function NewProjectPage() {
+export default async function NewProjectPage() {
+  const categories = await db.getProjectCategories();
+
   return (
     <div className="space-y-6">
-      <ProjectForm />
+      <ProjectForm availableCategories={categories} />
     </div>
   );
 }
