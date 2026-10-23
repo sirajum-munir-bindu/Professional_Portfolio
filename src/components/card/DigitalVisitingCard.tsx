@@ -111,7 +111,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
 
   return (
     <div
-      className={`h-[100dvh] max-h-[100dvh] w-full bg-[#07090e] text-slate-100 flex flex-col justify-center items-center p-2.5 sm:p-4 selection:bg-accent selection:text-accent-foreground relative overflow-hidden select-none ${
+      className={`min-h-screen min-h-[100dvh] w-full bg-[#07090e] text-slate-100 flex flex-col justify-center items-center px-3 sm:px-6 py-4 sm:py-8 selection:bg-accent selection:text-accent-foreground relative overflow-x-hidden ${
         className || ""
       }`}
     >
@@ -119,8 +119,8 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
       <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[380px] h-[300px] bg-accent/15 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[300px] h-[250px] bg-blue-600/10 rounded-full blur-[90px] pointer-events-none" />
 
-      {/* Main Premium Card Container - Fits single screen without scrolling */}
-      <div className="w-full max-w-[390px] sm:max-w-[420px] max-h-[96dvh] sm:max-h-[680px] my-auto relative z-10 flex flex-col justify-between rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden shrink-0">
+      {/* Main Premium Card Container */}
+      <div className="w-full max-w-[390px] sm:max-w-[430px] my-auto relative z-10 flex flex-col rounded-3xl bg-slate-900/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden">
         
         {/* Card Top Decorative Header Banner */}
         <div className="h-20 sm:h-24 bg-gradient-to-r from-accent/25 via-emerald-500/20 to-teal-600/25 relative border-b border-white/5 shrink-0">
@@ -155,8 +155,8 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
           </div>
         </div>
 
-        {/* Card Body - Note: No overflow-hidden so the avatar can seamlessly overlap the banner without clipping */}
-        <div className="px-4 sm:px-6 pb-3 sm:pb-4 pt-0 relative flex-1 flex flex-col justify-between">
+        {/* Card Body */}
+        <div className="px-4 sm:px-6 pb-4 pt-0 relative flex-1 flex flex-col justify-between">
           
           {/* Top Info Section: Avatar, Status, Name, Bio */}
           <div>
@@ -191,7 +191,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
 
             {/* Profile Identity & Title */}
             <div className="space-y-0.5 shrink-0">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-tight">{name}</h1>
                 <span title="Verified Identity" className="text-accent inline-flex">
                   <Sparkles className="w-4 h-4" />
@@ -201,13 +201,13 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
               
               <div className="flex items-center flex-wrap gap-x-3 gap-y-0.5 text-[11px] sm:text-xs text-slate-400 pt-0.5">
                 {company && (
-                  <div className="flex items-center gap-1 truncate">
+                  <div className="flex items-center gap-1 truncate max-w-[170px] sm:max-w-none">
                     <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     <span className="truncate">{company}</span>
                   </div>
                 )}
                 {location && (
-                  <div className="flex items-center gap-1 truncate">
+                  <div className="flex items-center gap-1 truncate max-w-[170px] sm:max-w-none">
                     <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     <span className="truncate">{location}</span>
                   </div>
@@ -217,27 +217,37 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
 
             {/* Professional Bio */}
             {bio && (
-              <p className="text-[11px] sm:text-xs text-slate-300 leading-relaxed line-clamp-2 bg-slate-950/50 p-2 sm:p-2.5 rounded-xl border border-white/5 my-1.5 sm:my-2">
+              <p className="text-[11px] sm:text-xs text-slate-300 leading-relaxed bg-slate-950/50 p-2.5 rounded-xl border border-white/5 my-2">
                 {bio}
               </p>
             )}
           </div>
 
-          {/* Action Center: Direct Communication Grid */}
-          <div className="space-y-1.5 my-1.5 shrink-0">
+          {/* Action Center: Save Contact & Direct Communication Grid */}
+          <div className="space-y-2 pt-1 shrink-0">
+            {/* 1-Tap Save Contact to Phone Button */}
+            <a
+              href="/api/card/vcf"
+              download={`${name.replace(/[^a-zA-Z0-9_-]/g, "_")}.vcf`}
+              className="w-full py-2.5 px-4 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-all flex items-center justify-center gap-2 shadow-glow active:scale-[0.99]"
+            >
+              <Download className="w-4 h-4" />
+              <span>Save Contact to Phone (.vcf)</span>
+            </a>
+
             {/* Direct Communication Grid: Call, WhatsApp, Email */}
             <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               {phone ? (
                 <a
                   href={`tel:${phone}`}
-                  className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-white text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all text-center"
+                  className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-white text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all text-center min-w-0 truncate"
                   title={`Call ${phone}`}
                 >
                   <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
-                  <span className="text-[10px] sm:text-[11px]">Call</span>
+                  <span className="text-[10px] sm:text-[11px] truncate">Call</span>
                 </a>
               ) : (
-                <div className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/30 border border-white/5 text-slate-500 text-xs flex flex-col items-center justify-center gap-1 opacity-50 cursor-not-allowed">
+                <div className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/30 border border-white/5 text-slate-500 text-xs flex flex-col items-center justify-center gap-1 opacity-50 cursor-not-allowed min-w-0">
                   <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="text-[10px] sm:text-[11px]">Call</span>
                 </div>
@@ -248,14 +258,14 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
                   href={`https://wa.me/${cleanPhoneForWa}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-white text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all text-center"
+                  className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-white text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all text-center min-w-0 truncate"
                   title="Chat on WhatsApp"
                 >
                   <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
-                  <span className="text-[10px] sm:text-[11px]">WhatsApp</span>
+                  <span className="text-[10px] sm:text-[11px] truncate">WhatsApp</span>
                 </a>
               ) : (
-                <div className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/30 border border-white/5 text-slate-500 text-xs flex flex-col items-center justify-center gap-1 opacity-50 cursor-not-allowed">
+                <div className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/30 border border-white/5 text-slate-500 text-xs flex flex-col items-center justify-center gap-1 opacity-50 cursor-not-allowed min-w-0">
                   <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="text-[10px] sm:text-[11px]">WhatsApp</span>
                 </div>
@@ -264,14 +274,14 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
               {email ? (
                 <a
                   href={`mailto:${email}`}
-                  className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-white text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all text-center"
+                  className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-white text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all text-center min-w-0 truncate"
                   title={`Email ${email}`}
                 >
                   <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
-                  <span className="text-[10px] sm:text-[11px]">Email</span>
+                  <span className="text-[10px] sm:text-[11px] truncate">Email</span>
                 </a>
               ) : (
-                <div className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/30 border border-white/5 text-slate-500 text-xs flex flex-col items-center justify-center gap-1 opacity-50 cursor-not-allowed">
+                <div className="py-2 sm:py-2.5 px-1 rounded-xl bg-slate-800/30 border border-white/5 text-slate-500 text-xs flex flex-col items-center justify-center gap-1 opacity-50 cursor-not-allowed min-w-0">
                   <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="text-[10px] sm:text-[11px]">Email</span>
                 </div>
@@ -287,7 +297,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
                   href={linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group truncate"
+                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group min-w-0"
                 >
                   <div className="w-5 h-5 rounded-md bg-[#0077b5]/20 text-[#0077b5] flex items-center justify-center shrink-0">
                     <Linkedin className="w-3.5 h-3.5" />
@@ -301,7 +311,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
                   href={github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group truncate"
+                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group min-w-0"
                 >
                   <div className="w-5 h-5 rounded-md bg-white/10 text-white flex items-center justify-center shrink-0">
                     <Github className="w-3.5 h-3.5" />
@@ -315,7 +325,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
                   href={twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group truncate"
+                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group min-w-0"
                 >
                   <div className="w-5 h-5 rounded-md bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
                     <Twitter className="w-3.5 h-3.5" />
@@ -329,7 +339,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
                   href={website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group truncate"
+                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group min-w-0"
                 >
                   <div className="w-5 h-5 rounded-md bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
                     <Globe className="w-3.5 h-3.5" />
@@ -343,7 +353,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
                   href={resume}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group truncate col-span-2 sm:col-span-1"
+                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group min-w-0 col-span-2 sm:col-span-1"
                 >
                   <div className="w-5 h-5 rounded-md bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
                     <FileText className="w-3.5 h-3.5" />
@@ -358,7 +368,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group truncate"
+                  className="flex items-center gap-2 p-2 sm:p-2.5 px-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-white/10 text-slate-200 text-xs font-medium transition-all group min-w-0"
                 >
                   <div className="w-5 h-5 rounded-md bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
                     <Globe className="w-3.5 h-3.5" />
@@ -370,7 +380,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
           </div>
 
           {/* Micro Footer inside Card */}
-          <div className="pt-2 text-center text-[10px] sm:text-[11px] text-slate-500 font-mono shrink-0">
+          <div className="pt-3 pb-1 text-center text-[10px] sm:text-[11px] text-slate-500 font-mono shrink-0">
             {name} &copy; {new Date().getFullYear()} &bull; Digital Identity Card
           </div>
         </div>
@@ -378,8 +388,8 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
 
       {/* QR Code Modal */}
       {qrOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-xs rounded-3xl bg-slate-900 border border-white/15 p-5 shadow-2xl text-center space-y-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+          <div className="relative w-full max-w-xs max-h-[90vh] overflow-y-auto rounded-3xl bg-slate-900 border border-white/15 p-4 sm:p-5 shadow-2xl text-center space-y-3 my-auto">
             <button
               type="button"
               onClick={() => setQrOpen(false)}

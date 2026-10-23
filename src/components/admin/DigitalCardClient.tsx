@@ -281,14 +281,14 @@ export function DigitalCardClient({ initialSettings }: DigitalCardClientProps) {
       </div>
 
       {activeTab === "preview" ? (
-        <div className="rounded-2xl border border-surface-border bg-slate-950 p-2 sm:p-4 flex justify-center h-[90vh] overflow-hidden">
-          <div className="w-full max-w-md h-full">
+        <div className="rounded-2xl border border-surface-border bg-slate-950 p-2 sm:p-4 flex justify-center max-h-[85vh] overflow-y-auto">
+          <div className="w-full max-w-md">
             <DigitalVisitingCard
               settings={{
                 ...settings,
                 cardCustomLinks: JSON.stringify(customLinks.filter((l) => l.label && l.url)),
               }}
-              className="h-full max-h-full bg-transparent"
+              className="bg-transparent min-h-0 py-3"
             />
           </div>
         </div>
@@ -619,14 +619,14 @@ export function DigitalCardClient({ initialSettings }: DigitalCardClientProps) {
               </div>
 
               {/* Miniature visual rendering */}
-              <div className="rounded-2xl bg-slate-950 p-2 border border-white/10 shadow-inner h-[540px] overflow-hidden flex items-center justify-center">
-                <div className="scale-[0.80] origin-center w-full">
+              <div className="rounded-2xl bg-slate-950 p-2 border border-white/10 shadow-inner max-h-[580px] overflow-y-auto flex items-start justify-center">
+                <div className="scale-[0.82] origin-top w-full">
                   <DigitalVisitingCard
                     settings={{
                       ...settings,
                       cardCustomLinks: JSON.stringify(customLinks.filter((l) => l.label && l.url)),
                     }}
-                    className="h-[600px] max-h-[600px] bg-transparent"
+                    className="bg-transparent min-h-0 py-2"
                   />
                 </div>
               </div>

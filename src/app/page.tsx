@@ -28,16 +28,16 @@ export default async function HomePage() {
     sameAs: [settings.githubUrl, settings.linkedinUrl, settings.twitterUrl].filter(Boolean),
   };
 
-  // If Premium E-Visiting Card mode is active, render ONLY the non-scrollable Digital Identity Card
+  // If Premium E-Visiting Card mode is active, render Digital Identity Card
   if (settings.activeDisplayMode === "DIGITAL_CARD") {
     return (
-      <div className="fixed inset-0 h-[100dvh] max-h-[100dvh] w-full overflow-hidden bg-[#07090e]">
+      <main className="min-h-screen min-h-[100dvh] w-full bg-[#07090e] overflow-x-hidden overflow-y-auto">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <DigitalVisitingCard settings={settings} />
-      </div>
+      </main>
     );
   }
 

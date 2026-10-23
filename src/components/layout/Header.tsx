@@ -65,11 +65,11 @@ export function Header({ settings }: HeaderProps) {
                 getInitials(settings.displayName)
               )}
             </div>
-            <div className="flex flex-col">
-              <span className="font-semibold text-sm tracking-tight text-white group-hover:text-accent transition-colors">
+            <div className="flex flex-col min-w-0">
+              <span className="font-semibold text-sm tracking-tight text-white group-hover:text-accent transition-colors truncate max-w-[140px] sm:max-w-none">
                 {settings.displayName}
               </span>
-              <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider hidden sm:inline">
+              <span className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider hidden sm:inline truncate">
                 {settings.roleTitle || "Systems Architect"}
               </span>
             </div>

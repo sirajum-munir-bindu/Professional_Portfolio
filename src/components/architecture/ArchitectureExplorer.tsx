@@ -78,7 +78,7 @@ export function ArchitectureExplorer({ projects }: ArchitectureExplorerProps) {
 
           {/* Project Architecture Selector */}
           {archProjects.length > 1 && (
-            <div className="flex items-center gap-2 p-1.5 rounded-xl bg-surface border border-surface-border">
+            <div className="flex items-center gap-2 p-1.5 rounded-xl bg-surface border border-surface-border overflow-x-auto max-w-full">
               {archProjects.map((p) => (
                 <button
                   key={p.slug}
@@ -136,7 +136,7 @@ export function ArchitectureExplorer({ projects }: ArchitectureExplorerProps) {
                         : "bg-surface-muted/40 border-surface-border hover:border-white/20 hover:bg-surface-muted/70"
                     }`}
                     aria-label={`Inspect ${node.label}`}
-                    aria-selected={isSelected}
+                    aria-pressed={isSelected}
                   >
                     <div className="flex items-center gap-3.5">
                       <div

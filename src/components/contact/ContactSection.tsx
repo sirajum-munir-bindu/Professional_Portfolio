@@ -45,7 +45,7 @@ export function ContactSection({ settings }: ContactSectionProps) {
                   </span>
                   <a
                     href={`mailto:${settings.primaryEmail}`}
-                    className="text-sm font-semibold text-white hover:text-accent transition-colors"
+                    className="text-sm font-semibold text-white hover:text-accent transition-colors break-all"
                   >
                     {settings.primaryEmail}
                   </a>
