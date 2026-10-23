@@ -186,6 +186,7 @@ export async function saveSiteSettingsAction(data: unknown) {
   try {
     const updated = await db.updateSiteSettings(parsed.data);
     revalidatePath("/", "layout");
+    revalidatePath("/");
     revalidatePath("/admin/settings");
     return { success: true, settings: updated };
   } catch (err) {
@@ -211,6 +212,7 @@ export async function saveActiveDisplayModeAction(mode: "PORTFOLIO" | "DIGITAL_C
       activeDisplayMode: parsed.data.activeDisplayMode,
     });
     revalidatePath("/", "layout");
+    revalidatePath("/");
     revalidatePath("/admin/settings");
     revalidatePath("/admin/card");
     return { success: true, activeDisplayMode: updated.activeDisplayMode, settings: updated };
@@ -235,6 +237,7 @@ export async function saveDigitalCardAction(data: unknown) {
   try {
     const updated = await db.updateSiteSettings(parsed.data);
     revalidatePath("/", "layout");
+    revalidatePath("/");
     revalidatePath("/admin/settings");
     revalidatePath("/admin/card");
     return { success: true, settings: updated };

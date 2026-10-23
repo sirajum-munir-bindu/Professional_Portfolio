@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
+import os from "os";
 import {
   initialProjects,
   initialProjectCategories,
@@ -29,6 +30,7 @@ declare global {
 }
 
 const LOCAL_STORE_FILE = path.join(process.cwd(), "prisma", "local-data.json");
+const TMP_STORE_FILE = path.join(os.tmpdir(), "portfolio-local-data.json");
 
 export const prisma =
   globalThis.prismaGlobal ??
@@ -36,9 +38,7 @@ export const prisma =
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalThis.prismaGlobal = prisma;
-}
+globalThis.prismaGlobal = prisma;
 
 // In-memory runtime cache/fallback store for when database is not yet connected or during local static export
 class ResilientDataStore {
@@ -78,8 +78,23 @@ class ResilientDataStore {
 
   private loadFromDisk() {
     try {
-      if (fs.existsSync(LOCAL_STORE_FILE)) {
-        const raw = fs.readFileSync(LOCAL_STORE_FILE, "utf-8");
+      let raw: string | null = null;
+      if (process.env.VERCEL && fs.existsSync(TMP_STORE_FILE)) {
+        try {
+          raw = fs.readFileSync(TMP_STORE_FILE, "utf-8");
+        } catch {
+          // ignore
+        }
+      }
+      if (!raw && fs.existsSync(LOCAL_STORE_FILE)) {
+        try {
+          raw = fs.readFileSync(LOCAL_STORE_FILE, "utf-8");
+        } catch {
+          // ignore
+        }
+      }
+
+      if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed.projectCategories)) this.projectCategories = parsed.projectCategories;
         if (Array.isArray(parsed.projects)) this.projects = parsed.projects;
@@ -113,7 +128,25 @@ class ResilientDataStore {
         settings: this.settings,
         messages: this.messages,
       };
-      fs.writeFileSync(LOCAL_STORE_FILE, JSON.stringify(data, null, 2), "utf-8");
+      const jsonStr = JSON.stringify(data, null, 2);
+
+      // Attempt to write to local file (works in development & writable environments)
+      let localWritten = false;
+      try {
+        fs.writeFileSync(LOCAL_STORE_FILE, jsonStr, "utf-8");
+        localWritten = true;
+      } catch {
+        // Read-only filesystem in serverless environments (e.g. Vercel)
+      }
+
+      // Also persist to /tmp on Vercel so warm serverless instances retain state across invocations
+      if (process.env.VERCEL) {
+        try {
+          fs.writeFileSync(TMP_STORE_FILE, jsonStr, "utf-8");
+        } catch {
+          // Ignore tmp save error
+        }
+      }
     } catch {
       // Ignore disk save error
     }
@@ -428,30 +461,69 @@ class ResilientDataStore {
   async upsertSkill(skill: Partial<SkillCategoryWithSkills["skills"][0]> & { name: string; categoryId: string }): Promise<void> {
     const id = skill.id || `s-${Date.now()}`;
     const category = this.skillCategories.find((c) => c.id === skill.categoryId);
+    const categoryName = category?.name || skill.categoryName || "General";
+    const newSkill = {
+      id,
+      name: skill.name,
+      categoryId: skill.categoryId,
+      categoryName,
+      iconName: skill.iconName || "Code",
+      shortDescription: skill.shortDescription || "",
+      evidenceNote: skill.evidenceNote || "",
+      order: skill.order ?? ((category?.skills.length || 0) + 1),
+      visible: skill.visible !== false,
+    };
     if (category) {
       const existingIdx = category.skills.findIndex((s) => s.id === id);
-      const newSkill = {
-        id,
-        name: skill.name,
-        categoryId: skill.categoryId,
-        categoryName: category.name,
-        iconName: skill.iconName || "Code",
-        shortDescription: skill.shortDescription || "",
-        evidenceNote: skill.evidenceNote || "",
-        order: skill.order ?? (category.skills.length + 1),
-        visible: skill.visible !== false,
-      };
       if (existingIdx >= 0) {
         category.skills[existingIdx] = newSkill;
       } else {
         category.skills.push(newSkill);
       }
     }
+    this.saveToDisk();
+
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.skill.upsert({
+          where: { id },
+          create: {
+            id,
+            name: newSkill.name,
+            categoryId: newSkill.categoryId,
+            iconName: newSkill.iconName,
+            shortDescription: newSkill.shortDescription,
+            evidenceNote: newSkill.evidenceNote,
+            order: newSkill.order,
+            visible: newSkill.visible,
+          },
+          update: {
+            name: newSkill.name,
+            categoryId: newSkill.categoryId,
+            iconName: newSkill.iconName,
+            shortDescription: newSkill.shortDescription,
+            evidenceNote: newSkill.evidenceNote,
+            order: newSkill.order,
+            visible: newSkill.visible,
+          },
+        });
+      }
+    } catch (err) {
+      console.error("[DB ERROR] Failed to upsert skill:", err);
+    }
   }
 
   async deleteSkill(id: string): Promise<void> {
     for (const cat of this.skillCategories) {
       cat.skills = cat.skills.filter((s) => s.id !== id);
+    }
+    this.saveToDisk();
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.skill.delete({ where: { id } });
+      }
+    } catch (err) {
+      console.error("[DB ERROR] Failed to delete skill:", err);
     }
   }
 
@@ -468,8 +540,8 @@ class ResilientDataStore {
           }));
         }
       }
-    } catch {
-      // fallback
+    } catch (err) {
+      console.error("[DB ERROR] Failed to fetch experience:", err);
     }
     return this.experience;
   }
@@ -481,10 +553,53 @@ class ResilientDataStore {
     } else {
       this.experience.push(exp);
     }
+    this.saveToDisk();
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.experience.upsert({
+          where: { id: exp.id },
+          create: {
+            id: exp.id,
+            company: exp.company,
+            role: exp.role,
+            location: exp.location,
+            startDate: exp.startDate,
+            endDate: exp.endDate,
+            current: exp.current,
+            type: exp.type,
+            description: exp.description,
+            highlights: JSON.stringify(exp.highlights || []),
+            order: exp.order,
+          },
+          update: {
+            company: exp.company,
+            role: exp.role,
+            location: exp.location,
+            startDate: exp.startDate,
+            endDate: exp.endDate,
+            current: exp.current,
+            type: exp.type,
+            description: exp.description,
+            highlights: JSON.stringify(exp.highlights || []),
+            order: exp.order,
+          },
+        });
+      }
+    } catch (err) {
+      console.error("[DB ERROR] Failed to upsert experience:", err);
+    }
   }
 
   async deleteExperience(id: string): Promise<void> {
     this.experience = this.experience.filter((e) => e.id !== id);
+    this.saveToDisk();
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.experience.delete({ where: { id } });
+      }
+    } catch (err) {
+      console.error("[DB ERROR] Failed to delete experience:", err);
+    }
   }
 
   async getEducation(): Promise<EducationItem[]> {
@@ -504,8 +619,8 @@ class ResilientDataStore {
           }));
         }
       }
-    } catch {
-      // fallback
+    } catch (err) {
+      console.error("[DB ERROR] Failed to fetch achievements:", err);
     }
     return this.achievements;
   }
@@ -517,10 +632,63 @@ class ResilientDataStore {
     } else {
       this.achievements.push(ach);
     }
+    this.saveToDisk();
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.achievement.upsert({
+          where: { id: ach.id },
+          create: {
+            id: ach.id,
+            title: ach.title,
+            issuer: ach.issuer,
+            date: ach.date,
+            category: ach.category,
+            url: ach.url,
+            description: ach.description,
+            order: ach.order,
+          },
+          update: {
+            title: ach.title,
+            issuer: ach.issuer,
+            date: ach.date,
+            category: ach.category,
+            url: ach.url,
+            description: ach.description,
+            order: ach.order,
+          },
+        });
+      }
+    } catch (err) {
+      console.error("[DB ERROR] Failed to upsert achievement:", err);
+    }
   }
 
   async deleteAchievement(id: string): Promise<void> {
     this.achievements = this.achievements.filter((a) => a.id !== id);
+    this.saveToDisk();
+    try {
+      if (process.env.DATABASE_URL) {
+        await prisma.achievement.delete({ where: { id } });
+      }
+    } catch (err) {
+      console.error("[DB ERROR] Failed to delete achievement:", err);
+    }
+  }
+
+  async getDatabaseHealth(): Promise<{ configured: boolean; connected: boolean; error?: string }> {
+    if (!process.env.DATABASE_URL) {
+      return { configured: false, connected: false, error: "DATABASE_URL is not configured." };
+    }
+    try {
+      await prisma.siteSettings.findFirst({ select: { id: true } });
+      return { configured: true, connected: true };
+    } catch (err) {
+      return {
+        configured: true,
+        connected: false,
+        error: err instanceof Error ? err.message : "Database connection failed",
+      };
+    }
   }
 
   async getSiteSettings(): Promise<SiteSettingsData> {
@@ -537,8 +705,8 @@ class ResilientDataStore {
           };
         }
       }
-    } catch {
-      // fallback
+    } catch (err) {
+      console.error("[DB ERROR] Failed to query SiteSettings from database:", err);
     }
     return {
       ...this.settings,
@@ -551,14 +719,77 @@ class ResilientDataStore {
     this.saveToDisk();
     try {
       if (process.env.DATABASE_URL) {
-        await prisma.siteSettings.upsert({
+        const allowedKeys = [
+          "displayName", "roleTitle", "headline", "bio", "avatarUrl",
+          "availableForWork", "availabilityNote", "primaryEmail", "location",
+          "githubUrl", "linkedinUrl", "twitterUrl", "resumeUrl", "accentColor",
+          "metaTitle", "metaDescription", "activeDisplayMode", "cardName",
+          "cardTitle", "cardCompany", "cardBio", "cardAvatarUrl", "cardPhone",
+          "cardWhatsapp", "cardEmail", "cardLocation", "cardWebsite",
+          "cardLinkedin", "cardGithub", "cardTwitter", "cardResumeUrl", "cardCustomLinks"
+        ];
+
+        const cleanUpdates: Record<string, any> = {};
+        for (const key of allowedKeys) {
+          if (key in updates && (updates as any)[key] !== undefined) {
+            cleanUpdates[key] = (updates as any)[key];
+          }
+        }
+
+        const createPayload: Record<string, any> = {
+          id: "default",
+          displayName: this.settings.displayName,
+          roleTitle: this.settings.roleTitle ?? null,
+          headline: this.settings.headline,
+          bio: this.settings.bio,
+          avatarUrl: this.settings.avatarUrl ?? null,
+          availableForWork: this.settings.availableForWork ?? true,
+          availabilityNote: this.settings.availabilityNote ?? null,
+          primaryEmail: this.settings.primaryEmail,
+          location: this.settings.location,
+          githubUrl: this.settings.githubUrl,
+          linkedinUrl: this.settings.linkedinUrl,
+          twitterUrl: this.settings.twitterUrl ?? null,
+          resumeUrl: this.settings.resumeUrl ?? null,
+          accentColor: this.settings.accentColor || "#10b981",
+          metaTitle: this.settings.metaTitle,
+          metaDescription: this.settings.metaDescription,
+          activeDisplayMode: this.settings.activeDisplayMode || "PORTFOLIO",
+          cardName: this.settings.cardName ?? null,
+          cardTitle: this.settings.cardTitle ?? null,
+          cardCompany: this.settings.cardCompany ?? null,
+          cardBio: this.settings.cardBio ?? null,
+          cardAvatarUrl: this.settings.cardAvatarUrl ?? null,
+          cardPhone: this.settings.cardPhone ?? null,
+          cardWhatsapp: this.settings.cardWhatsapp ?? null,
+          cardEmail: this.settings.cardEmail ?? null,
+          cardLocation: this.settings.cardLocation ?? null,
+          cardWebsite: this.settings.cardWebsite ?? null,
+          cardLinkedin: this.settings.cardLinkedin ?? null,
+          cardGithub: this.settings.cardGithub ?? null,
+          cardTwitter: this.settings.cardTwitter ?? null,
+          cardResumeUrl: this.settings.cardResumeUrl ?? null,
+          cardCustomLinks: this.settings.cardCustomLinks ?? null,
+          ...cleanUpdates,
+        };
+
+        const result = await prisma.siteSettings.upsert({
           where: { id: "default" },
-          create: { ...this.settings },
-          update: { ...updates },
+          create: createPayload as any,
+          update: cleanUpdates,
         });
+
+        if (result) {
+          this.settings = {
+            ...this.settings,
+            ...result,
+            activeDisplayMode: (result.activeDisplayMode as any) || "PORTFOLIO",
+          };
+          this.saveToDisk();
+        }
       }
-    } catch {
-      // fallback
+    } catch (err) {
+      console.error("[DB ERROR] Failed to upsert SiteSettings to database:", err);
     }
     return this.settings;
   }

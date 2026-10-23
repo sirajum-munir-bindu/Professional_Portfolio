@@ -577,6 +577,46 @@
         }
       ],
       "architectureDiagram": null
+    },
+    {
+      "id": "proj-1792788590468",
+      "slug": "automated-test-proj",
+      "title": "Automated Integration Test Project (Updated)",
+      "category": "Full-Stack System",
+      "shortDescription": "Verified test project description",
+      "coverImage": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31",
+      "demoUrl": null,
+      "githubUrl": null,
+      "videoUrl": null,
+      "featured": false,
+      "published": true,
+      "order": 5,
+      "problemStatement": "Testing problem",
+      "solutionOverview": "Testing solution",
+      "architectureOverview": "Testing overview",
+      "keyFeatures": [
+        "Test 1",
+        "Test 2"
+      ],
+      "personalContribution": "Testing lead",
+      "verifiedOutcomes": null,
+      "challengesLearned": null,
+      "technologies": [],
+      "media": [],
+      "architectureDiagram": {
+        "title": "Test Diagram",
+        "nodes": [
+          {
+            "id": "n1",
+            "label": "Test Node",
+            "role": "Service",
+            "description": "Test node desc",
+            "tier": "api"
+          }
+        ],
+        "edges": []
+      },
+      "updatedAt": "2026-10-23T20:49:50.470Z"
     }
   ],
   "skillCategories": [
@@ -900,7 +940,7 @@
     "accentColor": "#10b981",
     "metaTitle": "Sirajum Munir | Staff Software Engineer & Cloud Architect",
     "metaDescription": "Senior Engineering Portfolio showcasing mission-critical distributed systems, high-concurrency event pipelines, and interactive architecture blueprints.",
-    "activeDisplayMode": "PORTFOLIO",
+    "activeDisplayMode": "DIGITAL_CARD",
     "cardName": "Sirajum Munir",
     "cardTitle": "Software Developer & Systems Architect",
     "cardCompany": "Skill jobs",

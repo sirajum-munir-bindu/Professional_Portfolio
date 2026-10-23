@@ -3,6 +3,9 @@ import "./globals.css";
 import { db } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const viewport: Viewport = {
   themeColor: "#090a0f",
   width: "device-width",

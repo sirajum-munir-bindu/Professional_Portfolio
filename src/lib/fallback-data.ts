@@ -26,15 +26,15 @@ export const initialSiteSettings: SiteSettingsData = {
   metaTitle: "Sirajum Munir | Staff Software Engineer & Cloud Architect",
   metaDescription: "Senior Engineering Portfolio showcasing mission-critical distributed systems, high-concurrency event pipelines, and interactive architecture blueprints.",
 
-  // Default display mode: PORTFOLIO
-  activeDisplayMode: "PORTFOLIO",
+  // Default display mode: DIGITAL_CARD
+  activeDisplayMode: "DIGITAL_CARD",
   cardName: "Sirajum Munir",
   cardTitle: "Software Developer & Systems Architect",
-  cardCompany: "Independent Engineering Consultant",
+  cardCompany: "Skill jobs",
   cardBio: "Building high-performance distributed systems, resilient cloud backends, and modern full-stack web platforms.",
   cardAvatarUrl: null,
-  cardPhone: "+880 1700-000000",
-  cardWhatsapp: "+880 1700-000000",
+  cardPhone: "+880 1885701076",
+  cardWhatsapp: "+880 1885701076",
   cardEmail: "sirajummunir1102@gmail.com",
   cardLocation: "Mirpur-6, Dhaka, Bangladesh",
   cardWebsite: "",

@@ -5,17 +5,19 @@ import { db } from "@/lib/db";
 import { initialSiteSettings } from "@/lib/fallback-data";
 
 describe("Single-Domain Website Display Mode & E-Visiting Card System", () => {
+  let originalMode: "PORTFOLIO" | "DIGITAL_CARD" = "DIGITAL_CARD";
+
   beforeEach(async () => {
-    // Reset to initial settings for clean test isolation
+    // Isolate test cases
     await db.updateSiteSettings({
       activeDisplayMode: "PORTFOLIO",
     });
   });
 
   afterAll(async () => {
-    // Restore clean state
+    // Restore to DIGITAL_CARD
     await db.updateSiteSettings({
-      activeDisplayMode: "PORTFOLIO",
+      activeDisplayMode: "DIGITAL_CARD",
       cardName: "Sirajum Munir",
     });
   });

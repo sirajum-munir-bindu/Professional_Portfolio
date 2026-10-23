@@ -26,9 +26,10 @@ interface AdminSidebarProps {
   adminEmail: string;
   displayName?: string;
   avatarUrl?: string | null;
+  dbConnected?: boolean;
 }
 
-export function AdminSidebar({ adminEmail, displayName, avatarUrl }: AdminSidebarProps) {
+export function AdminSidebar({ adminEmail, displayName, avatarUrl, dbConnected }: AdminSidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -75,6 +76,19 @@ export function AdminSidebar({ adminEmail, displayName, avatarUrl }: AdminSideba
             </div>
             <div className="text-[11px] text-muted-foreground truncate max-w-[140px]">
               {adminEmail}
+            </div>
+            <div className="mt-1">
+              {dbConnected ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  PostgreSQL Active
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-amber-400" title="Changes won't persist across visits on Vercel without a database">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  Demo Mode (No DB)
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -199,6 +213,13 @@ export function AdminSidebar({ adminEmail, displayName, avatarUrl }: AdminSideba
                   </div>
                   <div className="text-[10px] text-muted-foreground truncate max-w-[130px]">
                     {adminEmail}
+                  </div>
+                  <div className="mt-0.5">
+                    {dbConnected ? (
+                      <span className="text-[9px] font-mono text-emerald-400">● DB Active</span>
+                    ) : (
+                      <span className="text-[9px] font-mono text-amber-400">● No DB</span>
+                    )}
                   </div>
                 </div>
               </div>
