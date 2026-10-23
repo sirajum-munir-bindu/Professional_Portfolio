@@ -22,7 +22,6 @@ import {
   Check,
   Copy,
   X,
-  Sparkles,
 } from "lucide-react";
 
 interface DigitalVisitingCardProps {
@@ -191,12 +190,7 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
 
             {/* Profile Identity & Title */}
             <div className="space-y-0.5 shrink-0">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-tight">{name}</h1>
-                <span title="Verified Identity" className="text-accent inline-flex">
-                  <Sparkles className="w-4 h-4" />
-                </span>
-              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-tight">{name}</h1>
               <p className="text-xs sm:text-sm font-semibold text-emerald-400 font-mono tracking-wide truncate">{title}</p>
               
               <div className="flex items-center flex-wrap gap-x-3 gap-y-0.5 text-[11px] sm:text-xs text-slate-400 pt-0.5">
@@ -223,18 +217,8 @@ export function DigitalVisitingCard({ settings, className }: DigitalVisitingCard
             )}
           </div>
 
-          {/* Action Center: Save Contact & Direct Communication Grid */}
-          <div className="space-y-2 pt-1 shrink-0">
-            {/* 1-Tap Save Contact to Phone Button */}
-            <a
-              href="/api/card/vcf"
-              download={`${name.replace(/[^a-zA-Z0-9_-]/g, "_")}.vcf`}
-              className="w-full py-2.5 px-4 rounded-xl bg-accent text-accent-foreground font-semibold text-xs hover:bg-accent-hover transition-all flex items-center justify-center gap-2 shadow-glow active:scale-[0.99]"
-            >
-              <Download className="w-4 h-4" />
-              <span>Save Contact to Phone (.vcf)</span>
-            </a>
-
+          {/* Action Center: Direct Communication Grid */}
+          <div className="space-y-1.5 my-1.5 shrink-0">
             {/* Direct Communication Grid: Call, WhatsApp, Email */}
             <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               {phone ? (
