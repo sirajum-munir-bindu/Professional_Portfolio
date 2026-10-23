@@ -1,0 +1,190 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Project {
+  id                   String                 @id @default(cuid())
+  slug                 String                 @unique
+  title                String
+  category             String                 // e.g. "Full-Stack System", "Cloud Architecture", "DevOps & SRE", "AI & Data Engineering"
+  shortDescription     String
+  coverImage           String
+  demoUrl              String?
+  githubUrl            String?
+  videoUrl             String?
+  featured             Boolean                @default(false)
+  published            Boolean                @default(true)
+  order                Int                    @default(0)
+
+  // Case Study Sections
+  problemStatement     String                 @db.Text
+  solutionOverview     String                 @db.Text
+  architectureOverview String                 @db.Text
+  keyFeatures          String                 @db.Text // JSON string array
+  personalContribution String                 @db.Text
+  verifiedOutcomes     String?                @db.Text // JSON or formatted bullet points
+  challengesLearned    String?                @db.Text
+
+  // Relations
+  technologies         ProjectTechnology[]
+  media                ProjectMedia[]
+  architectureDiagram  ArchitectureDiagram?
+
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@index([published, featured])
+  @@index([category])
+}
+
+model ProjectTechnology {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String
+  category  String   @default("General") // Frontend, Backend, Database, Cloud, Tool
+  order     Int      @default(0)
+
+  @@index([projectId])
+}
+
+model ProjectMedia {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       String
+  caption   String?
+  isCover   Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model ArchitectureDiagram {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  nodes       String   @db.Text // JSON array of ArchitectureNode { id, label, role, description, tier, status }
+  edges       String   @db.Text // JSON array of ArchitectureEdge { id, source, target, label, protocol }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SkillCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  order     Int      @default(0)
+  skills    Skill[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Skill {
+  id               String        @id @default(cuid())
+  name             String
+  categoryId       String
+  category         SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  iconName         String?
+  shortDescription String?
+  evidenceNote     String?       // Reference to practical production usage or related project
+  order            Int           @default(0)
+  visible          Boolean       @default(true)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([categoryId])
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  company     String
+  role        String
+  location    String?
+  startDate   String   // e.g. "2023-01"
+  endDate     String?  // null if current
+  current     Boolean  @default(false)
+  type        String   @default("FULL_TIME") // FULL_TIME, CONTRACT, INTERNSHIP
+  description String   @db.Text
+  highlights  String   @db.Text // JSON string array of accomplishments
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Education {
+  id           String   @id @default(cuid())
+  institution  String
+  degree       String
+  fieldOfStudy String
+  startDate    String
+  endDate      String
+  gradeOrHonor String?
+  activities   String?
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  issuer      String
+  date        String
+  category    String   @default("AWARD") // AWARD, CERTIFICATION, HACKATHON, TALK
+  url         String?
+  description String?  @db.Text
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  category  String   @default("GENERAL") // GENERAL, CONSULTING, JOB_OPPORTUNITY, ARCHITECTURE_REVIEW
+  status    String   @default("UNREAD") // UNREAD, READ, REPLIED, ARCHIVED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+model SiteSettings {
+  id               String   @id @default("default")
+  displayName      String   @default("Alexander Wright")
+  headline         String   @default("Staff Software Engineer & Cloud Architect")
+  bio              String   @db.Text
+  availableForWork Boolean  @default(true)
+  availabilityNote String?  @default("Open for high-impact technical leadership and consulting")
+  primaryEmail     String   @default("alexander.wright.eng@gmail.com")
+  location         String   @default("San Francisco, CA / Remote")
+  githubUrl        String   @default("https://github.com")
+  linkedinUrl      String   @default("https://linkedin.com")
+  twitterUrl       String?
+  resumeUrl        String?
+  accentColor      String   @default("#10b981") // Cyber emerald
+  metaTitle        String   @default("Alexander Wright | Staff Software Engineer & Product Architect")
+  metaDescription  String   @default("Portfolio of real distributed systems, microservices, cloud platforms, and full-stack digital products.")
+  updatedAt        DateTime @updatedAt
+}
